@@ -6,11 +6,23 @@ const { Client } = require('minecraft-launcher-core');
 const { ensureJava } = require('./java');
 const { ensureFabric, syncMods } = require('./mods');
 
-function autoMemory() {
+// Recommended game memory in GB for this computer.
+function autoMemoryGB() {
   const gb = os.totalmem() / 1024 ** 3;
-  if (gb >= 15) return { max: '6G', min: '2G' };
-  if (gb >= 7) return { max: '4G', min: '2G' };
-  return { max: '2G', min: '1G' };
+  if (gb >= 15) return 6;
+  if (gb >= 7) return 4;
+  return 2;
+}
+
+// Largest amount we let someone pick: leave at least 2GB for Windows.
+function maxMemoryGB() {
+  const total = Math.floor(os.totalmem() / 1024 ** 3);
+  return Math.max(2, Math.min(16, total - 2));
+}
+
+function memoryFor(choice) {
+  const gb = Number.isInteger(choice) ? Math.min(Math.max(choice, 2), maxMemoryGB()) : autoMemoryGB();
+  return { max: `${gb}G`, min: `${Math.min(2, gb)}G` };
 }
 
 // First run only: set the game language and a few friendly defaults.
@@ -41,7 +53,7 @@ function parseAddress(addr) {
  * @param {(line:string)=>void} [p.onLog]
  * @returns {Promise<{client: Client, done: Promise<number>}>}
  */
-async function prepareAndLaunch({ root, config, auth, report: rawReport, onLog = () => {} }) {
+async function prepareAndLaunch({ root, config, auth, memoryGB = 'auto', report: rawReport, onLog = () => {} }) {
   const mc = config.minecraftVersion;
   // Send at most ~10 progress updates per second (always send step changes).
   let lastStep = '';
@@ -74,7 +86,7 @@ async function prepareAndLaunch({ root, config, auth, report: rawReport, onLog =
     authorization: auth,
     javaPath,
     version: { number: mc, type: 'release', custom: fabricId },
-    memory: autoMemory(),
+    memory: memoryFor(memoryGB),
     overrides: { detached: false, maxSockets: 16 },
     launcherName: 'rpg-launcher',
   };
@@ -105,4 +117,4 @@ async function prepareAndLaunch({ root, config, auth, report: rawReport, onLog =
   return { client, proc, done };
 }
 
-module.exports = { prepareAndLaunch };
+module.exports = { prepareAndLaunch, autoMemoryGB, maxMemoryGB, memoryFor };

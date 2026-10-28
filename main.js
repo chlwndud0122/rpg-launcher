@@ -3,7 +3,8 @@ const { app, BrowserWindow, ipcMain, safeStorage, shell, session } = require('el
 const fs = require('fs');
 const path = require('path');
 const { Auth } = require('msmc');
-const { prepareAndLaunch } = require('./core/game');
+const os = require('os');
+const { prepareAndLaunch, autoMemoryGB, maxMemoryGB } = require('./core/game');
 const { fetchJson } = require('./core/net');
 const { redact, applySafeConfig } = require('./core/safe');
 
@@ -15,6 +16,17 @@ if (!app.requestSingleInstanceLock()) app.quit();
 const GAME_DIR = path.join(app.getPath('appData'), '.rpg-launcher');
 const ACCOUNT_FILE = path.join(app.getPath('userData'), 'account.dat');
 const LOG_FILE = path.join(GAME_DIR, 'launcher-log.txt');
+const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
+
+// ---------- per-computer settings ----------
+function readSettings() {
+  try {
+    const s = JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8'));
+    return { memoryGB: Number.isInteger(s.memoryGB) ? s.memoryGB : 'auto' };
+  } catch {
+    return { memoryGB: 'auto' };
+  }
+}
 
 let win;
 let account = null; // { name, uuid, auth (MCLC object) }
@@ -274,6 +286,7 @@ ipcMain.handle('play', async () => {
       root: GAME_DIR,
       config,
       auth: account.auth,
+      memoryGB: readSettings().memoryGB,
       report: s => {
         send('progress', s);
         if (s.started) setTimeout(() => win && !win.isDestroyed() && win.minimize(), 1500);
@@ -294,6 +307,38 @@ ipcMain.handle('play', async () => {
     gameRunning = false;
     log('play failed: ' + (e?.stack || e));
     return { ok: false, error: e?.message || '게임을 시작하지 못했어요.' };
+  }
+});
+
+ipcMain.handle('get-settings', () => ({
+  ...readSettings(),
+  autoGB: autoMemoryGB(),
+  maxGB: maxMemoryGB(),
+  totalGB: Math.round(os.totalmem() / 1024 ** 3),
+}));
+
+ipcMain.handle('set-settings', (_e, s) => {
+  const max = maxMemoryGB();
+  const memoryGB = Number.isInteger(s?.memoryGB) && s.memoryGB >= 2 && s.memoryGB <= max ? s.memoryGB : 'auto';
+  fs.mkdirSync(path.dirname(SETTINGS_FILE), { recursive: true });
+  fs.writeFileSync(SETTINGS_FILE, JSON.stringify({ memoryGB }));
+  return readSettings();
+});
+
+// Deletes downloaded game files so they are fetched again on the next start.
+// Worlds, settings, screenshots and minimap data are kept.
+const REPAIR_TARGETS = ['versions', 'libraries', 'assets', 'runtime', 'mods', '.fabric', 'launcher-mods.json'];
+ipcMain.handle('repair', async () => {
+  if (gameRunning) return { ok: false, error: '게임을 끈 다음에 복구할 수 있어요.' };
+  try {
+    for (const t of REPAIR_TARGETS) {
+      fs.rmSync(path.join(GAME_DIR, t), { recursive: true, force: true, maxRetries: 3 });
+    }
+    log('repair: removed ' + REPAIR_TARGETS.join(', '));
+    return { ok: true };
+  } catch (e) {
+    log('repair failed: ' + (e?.message || e));
+    return { ok: false, error: '일부 파일을 지우지 못했어요. 컴퓨터를 다시 켠 뒤 해보세요.' };
   }
 });
 

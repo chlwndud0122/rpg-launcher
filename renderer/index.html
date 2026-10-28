@@ -55,7 +55,10 @@
     <section class="status">
       <div class="status-text" id="status-text">준비됐어요</div>
       <div class="bar"><div class="fill" id="bar-fill"></div></div>
-      <button class="link small" id="btn-folder">게임 폴더 열기</button>
+      <div class="links">
+        <button class="link small" id="btn-settings">설정</button>
+        <button class="link small" id="btn-folder">게임 폴더 열기</button>
+      </div>
     </section>
 
     <button class="play" id="btn-play" disabled>
@@ -64,6 +67,47 @@
   </footer>
 
   <div class="toast" id="toast" role="alert" hidden></div>
+
+  <div class="overlay" id="update-dialog" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="update-title">
+      <div class="dialog-icon" aria-hidden="true">↑</div>
+      <h2 id="update-title">새 버전이 준비됐어요</h2>
+      <p id="update-text">지금 업데이트하면 런처가 잠깐 꺼졌다가 다시 켜져요.</p>
+      <div class="dialog-actions">
+        <button class="btn-secondary" id="update-later">나중에</button>
+        <button class="btn-primary" id="update-now">지금 업데이트</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="settings-dialog" hidden>
+    <div class="dialog wide" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <h2 id="settings-title">설정</h2>
+
+      <section class="setting">
+        <div class="setting-head">
+          <span class="setting-name">게임 메모리(램)</span>
+          <strong class="setting-value" id="mem-value">자동</strong>
+        </div>
+        <label class="check"><input type="checkbox" id="mem-auto" checked> 자동으로 정하기 (추천)</label>
+        <input type="range" id="mem-range" min="2" max="8" step="1" value="4" disabled aria-label="게임 메모리">
+        <div class="range-scale"><span id="mem-min">2GB</span><span id="mem-max">8GB</span></div>
+        <p class="hint" id="mem-hint"></p>
+      </section>
+
+      <section class="setting">
+        <div class="setting-head"><span class="setting-name">게임 파일 복구</span></div>
+        <p class="hint">게임이 안 켜지거나 이상할 때 눌러보세요. 게임 파일을 지우고 다음 실행 때 다시 받아요. 월드, 게임 설정, 미니맵 기록은 그대로 남아요.</p>
+        <button class="btn-secondary" id="btn-repair">게임 파일 복구</button>
+      </section>
+
+      <div class="dialog-actions">
+        <span class="app-version" id="app-version"></span>
+        <button class="btn-secondary" id="settings-cancel">취소</button>
+        <button class="btn-primary" id="settings-save">저장</button>
+      </div>
+    </div>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>

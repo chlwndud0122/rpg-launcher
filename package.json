@@ -1,6 +1,6 @@
 {
   "name": "rpg-launcher",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "마인크래프트 서버 런처",
   "main": "main.js",
   "scripts": {
