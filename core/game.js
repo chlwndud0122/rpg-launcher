@@ -5,6 +5,8 @@ const path = require('path');
 const { Client } = require('minecraft-launcher-core');
 const { ensureJava } = require('./java');
 const { ensureFabric, syncMods } = require('./mods');
+const { ensureServerEntry } = require('./servers');
+const { removeOldVersions } = require('./cleanup');
 
 // Recommended game memory in GB for this computer.
 function autoMemoryGB() {
@@ -79,8 +81,25 @@ async function prepareAndLaunch({ root, config, auth, memoryGB = 'auto', report:
 
   writeDefaultOptions(root, config);
 
+  // Free up space from older Minecraft versions and Java we no longer use.
+  try {
+    const removed = removeOldVersions(root, [mc, fabricId], javaPath);
+    if (removed.length) onLog('[launcher] removed old files: ' + removed.join(', '));
+  } catch (e) {
+    onLog('[launcher] cleanup skipped: ' + (e?.message || e));
+  }
+
   const client = new Client();
   const server = parseAddress(config.serverAddress);
+
+  // Show our server in the in-game multiplayer list too.
+  if (server) {
+    try {
+      ensureServerEntry(root, config.serverName || 'RPG 서버', server);
+    } catch (e) {
+      onLog('[launcher] server list not updated: ' + (e?.message || e));
+    }
+  }
   const opts = {
     root,
     authorization: auth,
