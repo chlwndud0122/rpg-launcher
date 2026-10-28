@@ -4,7 +4,7 @@ contextBridge.exposeInMainWorld('launcher', {
   init: () => ipcRenderer.invoke('init'),
   login: () => ipcRenderer.invoke('login'),
   logout: () => ipcRenderer.invoke('logout'),
-  play: () => ipcRenderer.invoke('play'),
+  play: serverId => ipcRenderer.invoke('play', serverId),
   openFolder: () => ipcRenderer.invoke('open-folder'),
   minimize: () => ipcRenderer.send('win-minimize'),
   close: () => ipcRenderer.send('win-close'),
@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('launcher', {
   installUpdate: () => ipcRenderer.invoke('install-update'),
   onUpdateReady: cb => ipcRenderer.on('update-ready', (_e, d) => cb(d)),
   onGameClosed: cb => ipcRenderer.on('game-closed', (_e, d) => cb(d)),
-  serverStatus: () => ipcRenderer.invoke('server-status'),
+  serverStatus: serverId => ipcRenderer.invoke('server-status', serverId),
+  selectServer: serverId => ipcRenderer.invoke('select-server', serverId),
   copyLog: () => ipcRenderer.invoke('copy-log'),
 });

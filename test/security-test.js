@@ -24,6 +24,20 @@ check('JSON access_token is hidden', !redact('{"access_token":"abcdef123456"}').
 check('Microsoft refresh token is hidden', !redact('refresh M.C540_BAY.0.U.-CsXyz1234567890abcdefghijk!').includes('CsXyz1234567890'));
 check('normal game log is untouched', redact('[Render thread/INFO]: Loaded 1470 recipes') === '[Render thread/INFO]: Loaded 1470 recipes');
 
+// 1b. Server list and access check settings are validated
+{
+  const { RULES } = require('../core/safe');
+  check('server list accepted', RULES.servers([{ id: 'main', name: '주영서버', address: '1.2.3.4' }, { id: 'test', name: 'T', address: '1.2.3.4:25566', restricted: true }]));
+  check('server list rejects bad address', !RULES.servers([{ id: 'main', name: 'x', address: 'evil.com --jvmArg' }]));
+  check('server list rejects duplicate ids', !RULES.servers([{ id: 'a', name: 'x', address: 'a.com' }, { id: 'a', name: 'y', address: 'b.com' }]));
+  check('server list rejects odd ids', !RULES.servers([{ id: '../x', name: 'x', address: 'a.com' }]));
+  check('access url accepted', RULES.accessUrl('http://161.33.209.62:25580/access'));
+  check('access url rejects other schemes', !RULES.accessUrl('file:///C:/x') && !RULES.accessUrl('javascript:alert(1)'));
+  const main = fs.readFileSync(path.join(__dirname, '..', 'main.js'), 'utf8');
+  check('access check only asks our own game server', main.includes('hostOf(s.address) === u.hostname'));
+  check('play uses server id, not an address from the page', main.includes('visibleServers.find(s => s.id === serverId)'));
+}
+
 // 2. A tampered remote config cannot do damage
 const base = { serverAddress: '', minecraftVersion: '1.21.11', mods: ['sodium'], language: 'ko_kr' };
 const evil = {

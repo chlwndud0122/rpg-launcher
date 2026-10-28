@@ -95,6 +95,12 @@ h1 {
 }
 .server-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 8px var(--gold); }
 .server-chip.ready .dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.server-list { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+button.server-chip { font: inherit; text-align: left; cursor: pointer; min-width: 300px; justify-content: flex-start; }
+button.server-chip:hover { border-color: #4a5263; color: var(--text); }
+button.server-chip.selected { border-color: var(--gold); color: var(--text); background: rgba(15,17,21,.85); box-shadow: 0 0 0 1px rgba(240,181,74,.35); }
+.server-chip .name { font-weight: 700; color: var(--text); }
+.server-chip .pick { margin-left: auto; font-size: 11px; color: var(--gold); padding-left: 12px; }
 .server-chip.offline .dot { background: #e5534b; box-shadow: 0 0 8px #e5534b; }
 .server-chip.checking .dot { background: var(--muted); box-shadow: none; }
 

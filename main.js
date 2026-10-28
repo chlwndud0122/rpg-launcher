@@ -23,10 +23,55 @@ const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
 function readSettings() {
   try {
     const s = JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8'));
-    return { memoryGB: Number.isInteger(s.memoryGB) ? s.memoryGB : 'auto' };
+    return {
+      memoryGB: Number.isInteger(s.memoryGB) ? s.memoryGB : 'auto',
+      selectedServer: typeof s.selectedServer === 'string' && /^[a-z0-9_-]{1,20}$/.test(s.selectedServer) ? s.selectedServer : null,
+    };
   } catch {
-    return { memoryGB: 'auto' };
+    return { memoryGB: 'auto', selectedServer: null };
   }
+}
+function writeSettings(patch) {
+  const next = { ...readSettings(), ...patch };
+  fs.mkdirSync(path.dirname(SETTINGS_FILE), { recursive: true });
+  fs.writeFileSync(SETTINGS_FILE, JSON.stringify(next));
+  return next;
+}
+
+// ---------- servers ----------
+// All servers from the config. Older configs only have one serverAddress.
+function allServers(config) {
+  if (Array.isArray(config.servers) && config.servers.length) return config.servers;
+  return config.serverAddress ? [{ id: 'main', name: config.serverName, address: config.serverAddress }] : [];
+}
+const hostOf = address => String(address).split(':')[0].toLowerCase();
+
+// Servers this player may pick. "restricted" servers are shown only when the
+// server's own access check says this account is on its whitelist.
+async function visibleServersFor(config, uuid) {
+  const list = allServers(config);
+  const open = list.filter(s => !s.restricted);
+  const restricted = list.filter(s => s.restricted);
+  if (!restricted.length || !uuid || !config.accessUrl) return open;
+  try {
+    // Only ever ask our own game server, never another host.
+    const u = new URL(config.accessUrl);
+    if (!list.some(s => hostOf(s.address) === u.hostname.toLowerCase())) return open;
+    u.searchParams.set('uuid', String(uuid).replace(/-/g, ''));
+    const r = await fetchJson(u.toString(), 4000);
+    const allowed = new Set(Array.isArray(r?.allowed) ? r.allowed.filter(x => typeof x === 'string') : []);
+    return list.filter(s => !s.restricted || allowed.has(s.id));
+  } catch (e) {
+    log('access check failed: ' + (e?.message || e));
+    return open;
+  }
+}
+let lastConfig = null;
+let visibleServers = [];
+const publicServers = () => visibleServers.map(s => ({ id: s.id, name: s.name, address: s.address }));
+function selectedServerId() {
+  const want = readSettings().selectedServer;
+  return visibleServers.some(s => s.id === want) ? want : visibleServers[0]?.id || null;
 }
 
 let win;
@@ -240,8 +285,11 @@ const send = (ch, data) => win && !win.isDestroyed() && win.webContents.send(ch,
 ipcMain.handle('init', async () => {
   // Both need the internet; do them at the same time so the launcher opens faster.
   const [config, acc] = await Promise.all([loadConfig(), restoreLogin()]);
-  serverAddress = config.serverAddress || '';
+  lastConfig = config;
+  visibleServers = await visibleServersFor(config, acc?.uuid);
   return {
+    servers: publicServers(),
+    selectedServer: selectedServerId(),
     config: {
       serverName: config.serverName,
       subtitle: config.subtitle,
@@ -269,7 +317,8 @@ ipcMain.handle('login', async () => {
     if (mc.isDemo()) throw new Error('profile');
     saveRefreshToken(xbox.save());
     account = toAccount(mc);
-    return { ok: true, account: { name: account.name, uuid: account.uuid } };
+    if (lastConfig) visibleServers = await visibleServersFor(lastConfig, account.uuid);
+    return { ok: true, account: { name: account.name, uuid: account.uuid }, servers: publicServers(), selectedServer: selectedServerId() };
   } catch (e) {
     log('login failed: ' + JSON.stringify(e?.message || e));
     const msg = friendlyAuthError(e);
@@ -280,10 +329,11 @@ ipcMain.handle('login', async () => {
 ipcMain.handle('logout', async () => {
   account = null;
   fs.rmSync(ACCOUNT_FILE, { force: true });
-  return true;
+  if (lastConfig) visibleServers = await visibleServersFor(lastConfig, null);
+  return { servers: publicServers(), selectedServer: selectedServerId() };
 });
 
-ipcMain.handle('play', async () => {
+ipcMain.handle('play', async (_e, serverId) => {
   if (gameRunning) return { ok: false, error: '게임이 이미 실행 중이에요.' };
   if (!account) return { ok: false, error: '먼저 로그인해 주세요.' };
   gameRunning = true;
@@ -298,10 +348,16 @@ ipcMain.handle('play', async () => {
       return { ok: false, error: '로그인이 만료됐어요. 다시 로그인해 주세요.', relogin: true };
     }
     const config = await loadConfig();
-    serverAddress = config.serverAddress || '';
+    lastConfig = config;
+    visibleServers = await visibleServersFor(config, account.uuid);
+    // The page only sends an id; the address always comes from our own checked list.
+    const target = visibleServers.find(s => s.id === serverId) || visibleServers[0];
+    config.serverAddress = target?.address || '';
+    if (target) writeSettings({ selectedServer: target.id });
     const { done } = await prepareAndLaunch({
       root: GAME_DIR,
       config,
+      servers: visibleServers.map(s => ({ name: s.name, address: s.address })),
       auth: account.auth,
       memoryGB: readSettings().memoryGB,
       report: s => {
@@ -337,9 +393,7 @@ ipcMain.handle('get-settings', () => ({
 ipcMain.handle('set-settings', (_e, s) => {
   const max = maxMemoryGB();
   const memoryGB = Number.isInteger(s?.memoryGB) && s.memoryGB >= 2 && s.memoryGB <= max ? s.memoryGB : 'auto';
-  fs.mkdirSync(path.dirname(SETTINGS_FILE), { recursive: true });
-  fs.writeFileSync(SETTINGS_FILE, JSON.stringify({ memoryGB }));
-  return readSettings();
+  return writeSettings({ memoryGB });
 });
 
 // Deletes downloaded game files so they are fetched again on the next start.
@@ -359,12 +413,18 @@ ipcMain.handle('repair', async () => {
   }
 });
 
-// Online/offline and player count for the main screen. Only ever pings the
-// address from our own (checked) config, never one the page sends.
-let serverAddress = '';
-ipcMain.handle('server-status', async () => {
-  if (!serverAddress) return { online: false, none: true };
-  return pingServer(serverAddress);
+// Online/offline and player count for the main screen. The page sends a server id;
+// we only ever ping addresses from our own (checked) config.
+ipcMain.handle('server-status', async (_e, serverId) => {
+  const s = visibleServers.find(x => x.id === serverId) || visibleServers[0];
+  if (!s) return { online: false, none: true };
+  return pingServer(s.address);
+});
+
+ipcMain.handle('select-server', (_e, serverId) => {
+  if (!visibleServers.some(s => s.id === serverId)) return selectedServerId();
+  writeSettings({ selectedServer: serverId });
+  return serverId;
 });
 
 // Copies the end of the launcher log so a friend can paste it to the server owner.

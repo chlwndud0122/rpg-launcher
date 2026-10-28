@@ -5,7 +5,7 @@ const path = require('path');
 const { Client } = require('minecraft-launcher-core');
 const { ensureJava } = require('./java');
 const { ensureFabric, syncMods } = require('./mods');
-const { ensureServerEntry } = require('./servers');
+const { ensureServerEntries } = require('./servers');
 const { removeOldVersions } = require('./cleanup');
 
 // Recommended game memory in GB for this computer.
@@ -52,10 +52,11 @@ function parseAddress(addr) {
  * @param {object} p.config     launcher.config.json contents
  * @param {object} p.auth       MCLC user object
  * @param {(s:{step:string,progress?:number})=>void} p.report
+ * @param {{name:string,address:string}[]} [p.servers] servers to show in the in-game list (ours first)
  * @param {(line:string)=>void} [p.onLog]
  * @returns {Promise<{client: Client, done: Promise<number>}>}
  */
-async function prepareAndLaunch({ root, config, auth, memoryGB = 'auto', report: rawReport, onLog = () => {} }) {
+async function prepareAndLaunch({ root, config, auth, memoryGB = 'auto', servers, report: rawReport, onLog = () => {} }) {
   const mc = config.minecraftVersion;
   // Send at most ~10 progress updates per second (always send step changes).
   let lastStep = '';
@@ -95,7 +96,8 @@ async function prepareAndLaunch({ root, config, auth, memoryGB = 'auto', report:
   // Show our server in the in-game multiplayer list too.
   if (server) {
     try {
-      ensureServerEntry(root, config.serverName || 'RPG 서버', server);
+      const list = Array.isArray(servers) && servers.length ? servers : [{ name: config.serverName || 'RPG 서버', address: server }];
+      ensureServerEntries(root, list);
     } catch (e) {
       onLog('[launcher] server list not updated: ' + (e?.message || e));
     }

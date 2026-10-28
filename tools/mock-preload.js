@@ -6,12 +6,15 @@ let progressCb;
 let updateCb;
 contextBridge.exposeInMainWorld('launcher', {
   init: async () => {
-    if (state === 'update') setTimeout(() => updateCb && updateCb({ version: '1.0.6' }), 200);
+    const two = state !== 'in1';
+    if (state === 'update') setTimeout(() => updateCb && updateCb({ version: '1.0.7' }), 200);
     return {
-      config: { serverName: '우리들의 RPG 서버', subtitle: '', serverAddress: loggedIn ? '161.33.209.62' : '', minecraftVersion: '26.2' },
+      config: { serverName: '주영서버', subtitle: '', serverAddress: loggedIn ? '161.33.209.62' : '', minecraftVersion: '26.2' },
       account: loggedIn ? { name: 'choijooyoung', uuid: 'd499fe8881194b3490849842d69c2b07' } : null,
-      version: '1.0.6',
+      version: '1.0.7',
       updateReady: false,
+      servers: loggedIn ? (two ? [{ id: 'main', name: '주영서버', address: '161.33.209.62' }, { id: 'test', name: '주영서버(테스트서버)', address: '161.33.209.62:25566' }] : [{ id: 'main', name: '주영서버', address: '161.33.209.62' }]) : [{ id: 'main', name: '주영서버', address: '161.33.209.62' }],
+      selectedServer: 'main',
     };
   },
   login: async () => ({ ok: false }),
@@ -30,6 +33,7 @@ contextBridge.exposeInMainWorld('launcher', {
   installUpdate: async () => true,
   onUpdateReady: cb => { updateCb = cb; },
   onGameClosed: () => {},
-  serverStatus: async () => ({ online: true, players: { online: 3, max: 10 } }),
+  serverStatus: async id => (id === 'test' ? { online: true, players: { online: 1, max: 10 } } : { online: true, players: { online: 3, max: 10 } }),
+  selectServer: async id => id,
   copyLog: async () => ({ ok: true }),
 });

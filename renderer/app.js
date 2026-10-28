@@ -6,6 +6,9 @@ let account = null;
 let busy = false;
 let gameRunning = false;
 let toastTimer;
+let servers = [];          // [{id, name, address}] this player may join
+let selectedServer = null; // id
+const serverStatus = {};   // id -> status
 
 function toast(msg, kind = 'error') {
   const t = $('toast');
@@ -47,6 +50,7 @@ function render() {
     label.textContent = busy ? '로그인 중…' : '마이크로소프트 로그인';
   }
   play.disabled = busy;
+  if (servers.length > 1) renderServers();
   $('btn-logout').disabled = busy;
 }
 
@@ -59,6 +63,7 @@ async function onPlayClick() {
     busy = false;
     if (r.ok) {
       account = r.account;
+      setServers(r.servers, r.selectedServer);
       setStatus(`${account.name}님, 환영해요! 게임 시작을 눌러주세요`, 0);
       toast(`${account.name}님으로 로그인했어요.`, 'info');
     } else {
@@ -71,7 +76,7 @@ async function onPlayClick() {
 
   busy = true; render();
   setStatus('준비 중…', null);
-  const r = await api.play();
+  const r = await api.play(selectedServer);
   if (!r.ok) {
     busy = false;
     setStatus('준비됐어요', 0);
@@ -90,24 +95,62 @@ api.onProgress(s => {
   }
 });
 
-// ---------- server status ----------
+// ---------- servers: list, choice and status ----------
+function setServers(list, selected) {
+  servers = Array.isArray(list) ? list : [];
+  selectedServer = servers.some(s => s.id === selected) ? selected : servers[0]?.id || null;
+  renderServers();
+  refreshStatus();
+}
+function statusText(s) {
+  if (!s) return '상태 확인 중…';
+  if (!s.online) return '꺼짐';
+  const p = s.players || { online: 0, max: 0 };
+  return `켜짐 · ${p.online}/${p.max}명`;
+}
+function renderServers() {
+  const box = $('server-list');
+  box.replaceChildren();
+  if (!servers.length) {
+    const chip = document.createElement('div');
+    chip.className = 'server-chip';
+    chip.append(Object.assign(document.createElement('span'), { className: 'dot' }),
+      Object.assign(document.createElement('span'), { textContent: '서버 준비 중 · 지금은 게임만 실행돼요' }));
+    box.append(chip);
+    return;
+  }
+  const many = servers.length > 1;
+  for (const sv of servers) {
+    const st = serverStatus[sv.id];
+    const el = document.createElement(many ? 'button' : 'div');
+    el.className = 'server-chip ' + (!st ? 'checking' : st.online ? 'ready' : 'offline') + (many && sv.id === selectedServer ? ' selected' : '');
+    el.title = `게임 시작 시 ${sv.address} 에 자동 접속`;
+    const dot = Object.assign(document.createElement('span'), { className: 'dot' });
+    const name = Object.assign(document.createElement('span'), { className: 'name', textContent: many ? sv.name : '서버' });
+    const text = Object.assign(document.createElement('span'), { textContent: (many ? '' : '') + statusText(st) });
+    el.append(dot, name, text);
+    if (many) {
+      el.type = 'button';
+      el.setAttribute('role', 'radio');
+      el.setAttribute('aria-checked', String(sv.id === selectedServer));
+      el.disabled = busy;
+      if (sv.id === selectedServer) el.append(Object.assign(document.createElement('span'), { className: 'pick', textContent: '선택됨' }));
+      el.addEventListener('click', async () => {
+        if (busy || sv.id === selectedServer) return;
+        selectedServer = await api.selectServer(sv.id) || sv.id;
+        renderServers();
+      });
+    }
+    box.append(el);
+  }
+}
 async function refreshStatus() {
-  const chip = $('server-chip');
-  if (!chip.classList.contains('ready') && !chip.classList.contains('offline')) {
-    chip.classList.add('checking');
-    $('server-text').textContent = '서버 상태 확인 중…';
-  }
-  let s = { online: false };
-  try { s = await api.serverStatus(); } catch {}
-  chip.classList.remove('checking', 'ready', 'offline');
-  if (s.online) {
-    chip.classList.add('ready');
-    const p = s.players || { online: 0, max: 0 };
-    $('server-text').textContent = `서버 켜짐 · ${p.online}/${p.max}명 접속 중`;
-  } else {
-    chip.classList.add('offline');
-    $('server-text').textContent = '서버 꺼짐 · 잠시 후 다시 확인해요';
-  }
+  await Promise.all(servers.map(async sv => {
+    let s = { online: false };
+    try { s = await api.serverStatus(sv.id); } catch {}
+    serverStatus[sv.id] = s;
+  }));
+  renderServers();
 }
 
 // ---------- error log ----------
@@ -131,7 +174,7 @@ api.onGameClosed(({ crashed }) => {
   } else {
     setStatus('준비됐어요', 0);
   }
-  if ($('server-chip').title) refreshStatus();
+  refreshStatus();
 });
 
 // ---------- update prompt ----------
@@ -228,8 +271,9 @@ document.addEventListener('keydown', e => {
 
 $('btn-play').addEventListener('click', onPlayClick);
 $('btn-logout').addEventListener('click', async () => {
-  await api.logout();
+  const r = await api.logout();
   account = null;
+  if (r && r.servers) setServers(r.servers, r.selectedServer);
   setStatus('로그아웃했어요', 0);
   render();
 });
@@ -241,20 +285,15 @@ $('btn-close').addEventListener('click', () => api.close());
   busy = true; render();
   setStatus('불러오는 중…', null);
   try {
-    const { config, account: acc, updateReady, version } = await api.init();
+    const { config, account: acc, updateReady, version, servers: servers0, selectedServer: selected0 } = await api.init();
     $('app-version').textContent = '주영런처 v' + version;
     if (updateReady) showUpdate(updateReady);
     $('server-name').textContent = config.serverName;
     $('subtitle').textContent = config.subtitle || '';
     $('subtitle').hidden = !config.subtitle;
     $('version-badge').textContent = `Java Edition ${config.minecraftVersion}`;
-    if (config.serverAddress) {
-      $('server-chip').title = `게임 시작 시 ${config.serverAddress} 에 자동 접속`;
-      refreshStatus();
-      setInterval(refreshStatus, 30000);
-    } else {
-      $('server-text').textContent = '서버 준비 중 · 지금은 게임만 실행돼요';
-    }
+    setServers(servers0, selected0);
+    setInterval(refreshStatus, 30000);
     account = acc;
     setStatus(account ? `${account.name}님, 준비됐어요` : '마이크로소프트 계정으로 로그인해 주세요', 0);
   } catch (e) {

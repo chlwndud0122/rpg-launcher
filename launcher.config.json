@@ -2,6 +2,20 @@
   "serverName": "주영서버",
   "subtitle": "",
   "serverAddress": "161.33.209.62",
+  "servers": [
+    {
+      "id": "main",
+      "name": "주영서버",
+      "address": "161.33.209.62"
+    },
+    {
+      "id": "test",
+      "name": "주영서버(테스트서버)",
+      "address": "161.33.209.62:25566",
+      "restricted": true
+    }
+  ],
+  "accessUrl": "http://161.33.209.62:25580/access",
   "minecraftVersion": "26.2",
   "fabricLoader": "latest",
   "mods": [

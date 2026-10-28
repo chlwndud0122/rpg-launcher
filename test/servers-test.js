@@ -4,7 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const assert = require('assert');
-const { ensureServerEntry, readNbt, writeNbt } = require('../core/servers');
+const { ensureServerEntry, ensureServerEntries, readNbt, writeNbt } = require('../core/servers');
 const { removeOldVersions } = require('../core/cleanup');
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg-launcher-test-'));
@@ -86,6 +86,17 @@ test('does not touch Java when the Java path is outside the game folder', dir =>
   fs.mkdirSync(path.join(dir, 'runtime', 'java-21'), { recursive: true });
   removeOldVersions(dir, [], 'C:\\Program Files\\Java\\bin\\javaw.exe');
   assert.ok(fs.existsSync(path.join(dir, 'runtime', 'java-21')));
+});
+
+test('several servers: ours first in order, friend servers kept, removed ones dropped', dir => {
+  const friend = [['name', { type: 8, value: 'Friend' }], ['ip', { type: 8, value: 'friend.example' }]];
+  fs.writeFileSync(path.join(dir, 'servers.dat'), writeNbt([['servers', { type: 9, value: { itemType: 10, items: [friend] } }]]));
+  ensureServerEntries(dir, [{ name: '주영서버', address: '161.33.209.62' }, { name: '테섭', address: '161.33.209.62:25566' }]);
+  assert.deepStrictEqual(servers(dir).map(s => s.ip), ['161.33.209.62', '161.33.209.62:25566', 'friend.example']);
+  // test server access removed -> its entry goes away, friend server stays
+  ensureServerEntries(dir, [{ name: '주영서버', address: '161.33.209.62' }]);
+  assert.deepStrictEqual(servers(dir).map(s => s.ip), ['161.33.209.62', 'friend.example']);
+  assert.strictEqual(ensureServerEntries(dir, [{ name: '주영서버', address: '161.33.209.62' }]), false);
 });
 
 // Optional: read a real servers.dat written by Minecraft and check it survives a round trip.

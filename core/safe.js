@@ -21,7 +21,24 @@ const RULES = {
   fabricLoader: v => typeof v === 'string' && (v === 'latest' || /^[0-9][0-9a-z.+\-_]{0,30}$/i.test(v)) && !v.includes('..'),
   mods: v => Array.isArray(v) && v.length <= 100 && v.every(s => typeof s === 'string' && /^[a-z0-9_-]{1,64}$/i.test(s)),
   language: v => typeof v === 'string' && /^[a-z]{2,3}_[a-z]{2,3}$/i.test(v),
+  // Servers friends can pick from. "restricted" ones are only shown to players
+  // the server says are allowed (see accessUrl).
+  servers: v =>
+    Array.isArray(v) && v.length >= 1 && v.length <= 5 &&
+    new Set(v.map(s => s?.id)).size === v.length &&
+    v.every(s =>
+      s && typeof s === 'object' &&
+      typeof s.id === 'string' && /^[a-z0-9_-]{1,20}$/.test(s.id) &&
+      typeof s.name === 'string' && s.name.length >= 1 && s.name.length <= 40 &&
+      typeof s.address === 'string' && s.address !== '' && isAddress(s.address) &&
+      (s.restricted === undefined || typeof s.restricted === 'boolean')),
+  // Where the launcher asks which restricted servers a player may see.
+  // Plain http is allowed because it only answers "which servers", nothing secret.
+  accessUrl: v => typeof v === 'string' && /^https?:\/\/[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?(:\d{1,5})?\/[a-z0-9/_-]{0,64}$/i.test(v),
 };
+function isAddress(v) {
+  return /^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?(:\d{1,5})?$/i.test(v) && !/\.\./.test(v);
+}
 
 // Copies only the settings that pass the checks. Returns the names that were rejected.
 function applySafeConfig(target, source) {

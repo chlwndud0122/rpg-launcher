@@ -81,26 +81,33 @@ const ipOf = entries => {
 };
 
 /**
- * Makes sure `address` is the first entry in the multiplayer list, named `name`.
- * The address we added last time is replaced if the server moved.
- * Returns true when the file was changed.
+ * Makes sure our servers are at the top of the multiplayer list, in the given order,
+ * with the given names. Addresses we added before but no longer use are removed;
+ * servers friends added themselves stay. Returns true when the file was changed.
+ * @param {string} root
+ * @param {{name: string, address: string}[]} servers
  */
-function ensureServerEntry(root, name, address) {
-  if (!address) return false;
+function ensureServerEntries(root, servers) {
+  servers = (servers || []).filter(s => s && s.address);
+  if (!servers.length) return false;
   const file = path.join(root, 'servers.dat');
   const memoFile = path.join(root, 'launcher-server.json');
-  const want = address.trim().toLowerCase();
-  let previous = '';
-  try { previous = String(JSON.parse(fs.readFileSync(memoFile, 'utf8')).address || '').toLowerCase(); } catch {}
+  let previous = [];
+  try {
+    const memo = JSON.parse(fs.readFileSync(memoFile, 'utf8'));
+    previous = (Array.isArray(memo.addresses) ? memo.addresses : [memo.address]).map(a => String(a || '').trim().toLowerCase()).filter(Boolean);
+  } catch {}
 
   let rootEntries = [];
-  if (fs.existsSync(file)) {
+  let existed = fs.existsSync(file);
+  if (existed) {
     try {
       rootEntries = readNbt(fs.readFileSync(file));
     } catch {
       // Unreadable file: keep a copy and start a fresh list.
       fs.copyFileSync(file, file + '.broken');
       rootEntries = [];
+      existed = false;
     }
   }
   let listTag = rootEntries.find(([n]) => n === 'servers');
@@ -111,27 +118,37 @@ function ensureServerEntry(root, name, address) {
   }
   const list = listTag[1].value;
   list.itemType = T.COMPOUND;
+  const before = list.items;
 
-  const ours = list.items.find(e => ipOf(e) === want);
-  const others = list.items.filter(e => {
-    const ip = ipOf(e);
-    return ip !== want && !(previous && ip === previous);
+  const wanted = servers.map(s => s.address.trim().toLowerCase());
+  const ours = servers.map((s, i) => {
+    const entry = before.find(e => ipOf(e) === wanted[i]) || [['ip', { type: T.STRING, value: s.address }]];
+    const nameTag = entry.find(([n]) => n === 'name');
+    if (nameTag) nameTag[1] = { type: T.STRING, value: s.name };
+    else entry.unshift(['name', { type: T.STRING, value: s.name }]);
+    return entry;
   });
-  const entry = ours || [['ip', { type: T.STRING, value: address }]];
-  const nameTag = entry.find(([n]) => n === 'name');
-  const changedName = !nameTag || nameTag[1].value !== name;
-  if (nameTag) nameTag[1] = { type: T.STRING, value: name };
-  else entry.unshift(['name', { type: T.STRING, value: name }]);
-
-  const alreadyFirst = list.items[0] === ours && others.length === list.items.length - 1;
-  list.items = [entry, ...others];
-  if (!(alreadyFirst && !changedName && fs.existsSync(file))) {
+  const others = before.filter(e => {
+    const ip = ipOf(e);
+    return !wanted.includes(ip) && !previous.includes(ip);
+  });
+  const next = [...ours, ...others];
+  const beforeBuf = existed ? fs.readFileSync(file) : null;
+  list.items = next;
+  const afterBuf = writeNbt(rootEntries);
+  const changed = !beforeBuf || !beforeBuf.equals(afterBuf);
+  if (changed) {
     fs.mkdirSync(root, { recursive: true });
-    fs.writeFileSync(file + '.tmp', writeNbt(rootEntries));
+    fs.writeFileSync(file + '.tmp', afterBuf);
     fs.renameSync(file + '.tmp', file);
   }
-  fs.writeFileSync(memoFile, JSON.stringify({ address }));
-  return !alreadyFirst || changedName;
+  fs.writeFileSync(memoFile, JSON.stringify({ addresses: servers.map(s => s.address) }));
+  return changed;
 }
 
-module.exports = { ensureServerEntry, readNbt, writeNbt };
+// Single-server shortcut (kept for older callers).
+function ensureServerEntry(root, name, address) {
+  return ensureServerEntries(root, [{ name, address }]);
+}
+
+module.exports = { ensureServerEntry, ensureServerEntries, readNbt, writeNbt };
