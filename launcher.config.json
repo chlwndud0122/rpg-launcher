@@ -2,7 +2,7 @@
   "serverName": "우리들의 RPG 서버",
   "subtitle": "친구들과 함께하는 모험",
   "serverAddress": "",
-  "minecraftVersion": "1.21.11",
+  "minecraftVersion": "26.2",
   "fabricLoader": "latest",
   "mods": [
     "fabric-api",
