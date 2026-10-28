@@ -76,6 +76,7 @@ async function onPlayClick() {
     busy = false;
     setStatus('준비됐어요', 0);
     if (r.relogin) account = null;
+    else $('btn-copylog-quick').hidden = false;
     toast(r.error);
     render();
   }
@@ -89,6 +90,35 @@ api.onProgress(s => {
   }
 });
 
+// ---------- server status ----------
+async function refreshStatus() {
+  const chip = $('server-chip');
+  if (!chip.classList.contains('ready') && !chip.classList.contains('offline')) {
+    chip.classList.add('checking');
+    $('server-text').textContent = '서버 상태 확인 중…';
+  }
+  let s = { online: false };
+  try { s = await api.serverStatus(); } catch {}
+  chip.classList.remove('checking', 'ready', 'offline');
+  if (s.online) {
+    chip.classList.add('ready');
+    const p = s.players || { online: 0, max: 0 };
+    $('server-text').textContent = `서버 켜짐 · ${p.online}/${p.max}명 접속 중`;
+  } else {
+    chip.classList.add('offline');
+    $('server-text').textContent = '서버 꺼짐 · 잠시 후 다시 확인해요';
+  }
+}
+
+// ---------- error log ----------
+async function copyLog() {
+  const r = await api.copyLog();
+  toast(r.empty ? '아직 기록이 없어요. 게임을 한 번 실행한 뒤 눌러 주세요.'
+    : '오류 기록을 복사했어요. 카톡이나 디스코드에 붙여넣기(Ctrl+V) 해서 보내 주세요.', 'info');
+}
+$('btn-copylog').addEventListener('click', copyLog);
+$('btn-copylog-quick').addEventListener('click', copyLog);
+
 api.onGameClosed(({ crashed }) => {
   busy = false;
   gameRunning = false;
@@ -96,10 +126,12 @@ api.onGameClosed(({ crashed }) => {
   render();
   if (crashed) {
     setStatus('게임이 비정상 종료됐어요', 0);
-    toast('게임이 갑자기 꺼졌어요. 다시 시작해 보고, 계속 그러면 설정 → "게임 파일 복구"를 눌러보세요.');
+    $('btn-copylog-quick').hidden = false;
+    toast('게임이 갑자기 꺼졌어요. 다시 시작해 보고, 계속 그러면 "오류 기록 복사"를 눌러 서버 주인에게 보내 주세요.');
   } else {
     setStatus('준비됐어요', 0);
   }
+  if ($('server-chip').title) refreshStatus();
 });
 
 // ---------- update prompt ----------
@@ -214,11 +246,12 @@ $('btn-close').addEventListener('click', () => api.close());
     if (updateReady) showUpdate(updateReady);
     $('server-name').textContent = config.serverName;
     $('subtitle').textContent = config.subtitle || '';
+    $('subtitle').hidden = !config.subtitle;
     $('version-badge').textContent = `Java Edition ${config.minecraftVersion}`;
-    const chip = $('server-chip');
     if (config.serverAddress) {
-      $('server-text').textContent = `게임 시작 시 ${config.serverAddress} 에 자동 접속`;
-      chip.classList.add('ready');
+      $('server-chip').title = `게임 시작 시 ${config.serverAddress} 에 자동 접속`;
+      refreshStatus();
+      setInterval(refreshStatus, 30000);
     } else {
       $('server-text').textContent = '서버 준비 중 · 지금은 게임만 실행돼요';
     }

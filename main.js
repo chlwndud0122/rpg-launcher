@@ -1,5 +1,5 @@
 // Launcher main process: window, Microsoft login, and starting the game.
-const { app, BrowserWindow, ipcMain, safeStorage, shell, session } = require('electron');
+const { app, BrowserWindow, ipcMain, safeStorage, shell, session, clipboard } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { Auth } = require('msmc');
@@ -7,6 +7,7 @@ const os = require('os');
 const { prepareAndLaunch, autoMemoryGB, maxMemoryGB } = require('./core/game');
 const { fetchJson } = require('./core/net');
 const { redact, applySafeConfig } = require('./core/safe');
+const { pingServer } = require('./core/status');
 
 // Keep the settings folder from before the rename, so nobody has to log in again.
 app.setPath('userData', path.join(app.getPath('appData'), 'RPG Launcher'));
@@ -102,12 +103,26 @@ function readRefreshToken() {
   }
 }
 
-function log(line) {
+// Log lines are collected and written together, so a chatty game doesn't
+// cause thousands of tiny disk writes.
+let logBuffer = [];
+let logTimer = null;
+function flushLog() {
+  logTimer = null;
+  if (!logBuffer.length) return;
+  const text = logBuffer.join('');
+  logBuffer = [];
   try {
     fs.mkdirSync(GAME_DIR, { recursive: true });
-    fs.appendFileSync(LOG_FILE, `[${new Date().toISOString()}] ${redact(line)}\n`);
+    fs.appendFileSync(LOG_FILE, text);
   } catch {}
 }
+function log(line) {
+  logBuffer.push(`[${new Date().toISOString()}] ${redact(line)}\n`);
+  if (logBuffer.length >= 200) flushLog();
+  else if (!logTimer) logTimer = setTimeout(flushLog, 1000);
+}
+process.on('exit', flushLog);
 
 function friendlyAuthError(e) {
   const code = typeof e === 'string' ? e : e?.ts || e?.message || '';
@@ -223,8 +238,9 @@ app.on('window-all-closed', () => app.quit());
 const send = (ch, data) => win && !win.isDestroyed() && win.webContents.send(ch, data);
 
 ipcMain.handle('init', async () => {
-  const config = await loadConfig();
-  const acc = await restoreLogin();
+  // Both need the internet; do them at the same time so the launcher opens faster.
+  const [config, acc] = await Promise.all([loadConfig(), restoreLogin()]);
+  serverAddress = config.serverAddress || '';
   return {
     config: {
       serverName: config.serverName,
@@ -282,6 +298,7 @@ ipcMain.handle('play', async () => {
       return { ok: false, error: '로그인이 만료됐어요. 다시 로그인해 주세요.', relogin: true };
     }
     const config = await loadConfig();
+    serverAddress = config.serverAddress || '';
     const { done } = await prepareAndLaunch({
       root: GAME_DIR,
       config,
@@ -340,6 +357,34 @@ ipcMain.handle('repair', async () => {
     log('repair failed: ' + (e?.message || e));
     return { ok: false, error: '일부 파일을 지우지 못했어요. 컴퓨터를 다시 켠 뒤 해보세요.' };
   }
+});
+
+// Online/offline and player count for the main screen. Only ever pings the
+// address from our own (checked) config, never one the page sends.
+let serverAddress = '';
+ipcMain.handle('server-status', async () => {
+  if (!serverAddress) return { online: false, none: true };
+  return pingServer(serverAddress);
+});
+
+// Copies the end of the launcher log so a friend can paste it to the server owner.
+// Login tokens are already hidden when the log is written; hide them again to be safe.
+ipcMain.handle('copy-log', () => {
+  flushLog();
+  let text = '';
+  try {
+    const data = fs.readFileSync(LOG_FILE, 'utf8');
+    text = data.slice(-60000);
+    const cut = text.indexOf('\n');
+    if (data.length > 60000 && cut >= 0) text = text.slice(cut + 1);
+  } catch {}
+  const header = [
+    `주영런처 v${app.getVersion()} · ${os.platform()} ${os.release()} · 램 ${Math.round(os.totalmem() / 1024 ** 3)}GB`,
+    `메모리 설정: ${readSettings().memoryGB}`,
+    '----',
+  ].join('\n');
+  clipboard.writeText(redact(header + '\n' + (text || '(기록 없음)')));
+  return { ok: true, empty: !text };
 });
 
 ipcMain.handle('open-folder', () => {

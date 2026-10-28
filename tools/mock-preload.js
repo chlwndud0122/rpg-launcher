@@ -8,9 +8,9 @@ contextBridge.exposeInMainWorld('launcher', {
   init: async () => {
     if (state === 'update') setTimeout(() => updateCb && updateCb({ version: '1.0.6' }), 200);
     return {
-      config: { serverName: '우리들의 RPG 서버', subtitle: '친구들과 함께하는 모험', serverAddress: loggedIn ? 'rpg.example.com' : '', minecraftVersion: '1.21.11' },
-      account: loggedIn ? { name: 'Steve_Adventurer', uuid: '8667ba71b85a4004af54457a9734eed7' } : null,
-      version: '1.0.5',
+      config: { serverName: '우리들의 RPG 서버', subtitle: '', serverAddress: loggedIn ? '161.33.209.62' : '', minecraftVersion: '26.2' },
+      account: loggedIn ? { name: 'choijooyoung', uuid: 'd499fe8881194b3490849842d69c2b07' } : null,
+      version: '1.0.6',
       updateReady: false,
     };
   },
@@ -30,4 +30,6 @@ contextBridge.exposeInMainWorld('launcher', {
   installUpdate: async () => true,
   onUpdateReady: cb => { updateCb = cb; },
   onGameClosed: () => {},
+  serverStatus: async () => ({ online: true, players: { online: 3, max: 10 } }),
+  copyLog: async () => ({ ok: true }),
 });

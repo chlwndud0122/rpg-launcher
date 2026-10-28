@@ -23,8 +23,28 @@ function findJavaw(dir) {
   return null;
 }
 
+// Remembers which Java each Minecraft version needs, so the game can still
+// start when Mojang's servers can't be reached.
+async function javaMajorFor(root, mcVersion) {
+  const cacheFile = path.join(root, 'runtime', 'java-versions.json');
+  let cache = {};
+  try { cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8')); } catch {}
+  try {
+    const major = await requiredJavaMajor(mcVersion);
+    if (cache[mcVersion] !== major) {
+      cache[mcVersion] = major;
+      fs.mkdirSync(path.dirname(cacheFile), { recursive: true });
+      fs.writeFileSync(cacheFile, JSON.stringify(cache));
+    }
+    return major;
+  } catch (e) {
+    if (Number.isInteger(cache[mcVersion])) return cache[mcVersion];
+    throw e;
+  }
+}
+
 async function ensureJava(root, mcVersion, report) {
-  const major = await requiredJavaMajor(mcVersion);
+  const major = await javaMajorFor(root, mcVersion);
   const javaDir = path.join(root, 'runtime', `java-${major}`);
   const existing = findJavaw(javaDir);
   if (existing) return existing;

@@ -15,4 +15,6 @@ contextBridge.exposeInMainWorld('launcher', {
   installUpdate: () => ipcRenderer.invoke('install-update'),
   onUpdateReady: cb => ipcRenderer.on('update-ready', (_e, d) => cb(d)),
   onGameClosed: cb => ipcRenderer.on('game-closed', (_e, d) => cb(d)),
+  serverStatus: () => ipcRenderer.invoke('server-status'),
+  copyLog: () => ipcRenderer.invoke('copy-log'),
 });

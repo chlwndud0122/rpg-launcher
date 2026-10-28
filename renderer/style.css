@@ -65,9 +65,15 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
     radial-gradient(1px 1px at 91% 38%, #fff5, transparent),
     radial-gradient(1px 1px at 37% 44%, #fff4, transparent);
 }
-.mountains { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 62%; }
-.m-far { fill: #231c2f; }
-.m-near { fill: #15121c; }
+/* Main artwork (renderer/hero.jpg). Darkened at the top-left so the server name stays readable. */
+.art {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(100deg, rgba(8,10,16,.88) 0%, rgba(8,10,16,.55) 30%, rgba(8,10,16,0) 52%),
+    linear-gradient(180deg, rgba(8,10,16,.35) 0%, rgba(8,10,16,0) 30%, rgba(8,10,16,0) 80%, rgba(8,10,16,.55) 100%),
+    url("hero.jpg");
+  background-size: cover; background-position: center bottom;
+}
 
 .hero-text { position: absolute; left: 56px; top: 56px; max-width: 560px; }
 .badge {
@@ -89,6 +95,8 @@ h1 {
 }
 .server-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 8px var(--gold); }
 .server-chip.ready .dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.server-chip.offline .dot { background: #e5534b; box-shadow: 0 0 8px #e5534b; }
+.server-chip.checking .dot { background: var(--muted); box-shadow: none; }
 
 /* ---- dock ---- */
 .dock {

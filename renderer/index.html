@@ -19,10 +19,7 @@
 
   <main class="hero">
     <div class="sky" aria-hidden="true"></div>
-    <svg class="mountains" viewBox="0 0 960 260" preserveAspectRatio="none" aria-hidden="true">
-      <path class="m-far" d="M0 170 L80 120 L140 150 L220 80 L300 140 L360 110 L440 160 L520 70 L600 130 L680 100 L760 150 L840 90 L960 140 L960 260 L0 260Z"/>
-      <path class="m-near" d="M0 210 L60 180 L120 200 L200 150 L270 195 L340 170 L420 205 L500 160 L580 200 L650 175 L730 210 L810 165 L880 195 L960 175 L960 260 L0 260Z"/>
-    </svg>
+    <div class="art" aria-hidden="true"></div>
     <div class="hero-text">
       <div class="badge" id="version-badge">Java Edition</div>
       <h1 id="server-name">우리들의 RPG 서버</h1>
@@ -58,6 +55,7 @@
       <div class="links">
         <button class="link small" id="btn-settings">설정</button>
         <button class="link small" id="btn-folder">게임 폴더 열기</button>
+        <button class="link small" id="btn-copylog-quick" hidden>오류 기록 복사</button>
       </div>
     </section>
 
@@ -99,6 +97,12 @@
         <div class="setting-head"><span class="setting-name">게임 파일 복구</span></div>
         <p class="hint">게임이 안 켜지거나 이상할 때 눌러보세요. 게임 파일을 지우고 다음 실행 때 다시 받아요. 월드, 게임 설정, 미니맵 기록은 그대로 남아요.</p>
         <button class="btn-secondary" id="btn-repair">게임 파일 복구</button>
+      </section>
+
+      <section class="setting">
+        <div class="setting-head"><span class="setting-name">문제 알리기</span></div>
+        <p class="hint">게임이 튕기거나 안 켜질 때 눌러서 서버 주인에게 붙여넣어 보내 주세요. 로그인 정보는 자동으로 가려져요.</p>
+        <button class="btn-secondary" id="btn-copylog">오류 기록 복사</button>
       </section>
 
       <div class="dialog-actions">

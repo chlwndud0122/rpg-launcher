@@ -72,7 +72,10 @@ check('sandbox on', /sandbox:\s*true/.test(main));
 check('navigation blocked', main.includes("'will-navigate'"));
 check('permission requests denied', main.includes('setPermissionRequestHandler'));
 check('only https links open externally', /\^https:/.test(main));
-check('log writes go through redact', /appendFileSync\(LOG_FILE[^\n]*redact\(/.test(main));
+check('log writes go through redact',
+  /logBuffer\.push\([^\n]*redact\(/.test(main) &&
+  (main.match(/appendFileSync\(LOG_FILE/g) || []).length === 1 &&
+  /fs\.appendFileSync\(LOG_FILE, text\)/.test(main));
 const html = fs.readFileSync(path.join(__dirname, '..', 'renderer', 'index.html'), 'utf8');
 check('page has a strict Content-Security-Policy', /script-src 'self'/.test(html) && !/unsafe-inline|unsafe-eval/.test(html));
 const app = fs.readFileSync(path.join(__dirname, '..', 'renderer', 'app.js'), 'utf8');

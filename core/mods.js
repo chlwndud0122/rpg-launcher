@@ -10,8 +10,20 @@ const MODRINTH = 'https://api.modrinth.com/v2';
 async function ensureFabric(root, mcVersion, loaderSetting) {
   let loader = loaderSetting;
   if (!loader || loader === 'latest') {
-    const loaders = await fetchJson('https://meta.fabricmc.net/v2/versions/loader');
-    loader = (loaders.find(l => l.stable) || loaders[0]).version;
+    try {
+      const loaders = await fetchJson('https://meta.fabricmc.net/v2/versions/loader');
+      loader = (loaders.find(l => l.stable) || loaders[0]).version;
+    } catch (e) {
+      // Offline: keep using the Fabric we installed last time for this version.
+      const suffix = `-${mcVersion}`;
+      const dir = path.join(root, 'versions');
+      const installed = fs.existsSync(dir)
+        ? fs.readdirSync(dir).filter(n => n.startsWith('fabric-loader-') && n.endsWith(suffix) &&
+            fs.existsSync(path.join(dir, n, `${n}.json`)))
+        : [];
+      if (!installed.length) throw e;
+      return installed.sort().pop();
+    }
   }
   const id = `fabric-loader-${loader}-${mcVersion}`;
   const jsonPath = path.join(root, 'versions', id, `${id}.json`);
