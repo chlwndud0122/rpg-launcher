@@ -7,6 +7,9 @@ const { prepareAndLaunch } = require('./core/game');
 const { fetchJson } = require('./core/net');
 const { redact, applySafeConfig } = require('./core/safe');
 
+// Keep the settings folder from before the rename, so nobody has to log in again.
+app.setPath('userData', path.join(app.getPath('appData'), 'RPG Launcher'));
+
 if (!app.requestSingleInstanceLock()) app.quit();
 
 const GAME_DIR = path.join(app.getPath('appData'), '.rpg-launcher');
@@ -134,7 +137,7 @@ function createWindow() {
     resizable: false,
     frame: false,
     backgroundColor: '#0f1115',
-    title: 'RPG Launcher',
+    title: '주영런처',
     icon: path.join(__dirname, 'build', 'icon.png'),
     show: false,
     webPreferences: {

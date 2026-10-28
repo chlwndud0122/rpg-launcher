@@ -127,7 +127,6 @@ $('btn-close').addEventListener('click', () => api.close());
     $('server-name').textContent = config.serverName;
     $('subtitle').textContent = config.subtitle || '';
     $('version-badge').textContent = `Java Edition ${config.minecraftVersion}`;
-    document.title = config.serverName;
     const chip = $('server-chip');
     if (config.serverAddress) {
       $('server-text').textContent = `게임 시작 시 ${config.serverAddress} 에 자동 접속`;
