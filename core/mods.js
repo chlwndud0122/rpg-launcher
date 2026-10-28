@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { fetchJson, download, fileMatches } = require('./net');
+const { safeFileName, assertTrustedUrl } = require('./safe');
 
 const MODRINTH = 'https://api.modrinth.com/v2';
 
@@ -43,7 +44,10 @@ async function resolveMods(slugs, mcVersion) {
     if (resolved.has(v.project_id)) continue;
     seen.add(v.project_id);
     const file = v.files.find(f => f.primary) || v.files[0];
-    resolved.set(v.project_id, { name: file.filename, url: file.url, sha1: file.hashes.sha1 });
+    const name = safeFileName(file.filename, '.jar');
+    if (!name || !/^[0-9a-f]{40}$/i.test(file.hashes?.sha1 || '')) throw new Error(`모드 "${idOrSlug}" 파일 정보가 이상해서 멈췄어요.`);
+    assertTrustedUrl(file.url, ['modrinth.com']);
+    resolved.set(v.project_id, { name, url: file.url, sha1: file.hashes.sha1 });
     for (const dep of v.dependencies || []) {
       if (dep.dependency_type === 'required' && dep.project_id) queue.push(dep.project_id);
     }
@@ -75,7 +79,8 @@ async function syncMods(root, mcVersion, slugs, report) {
     const prev = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
     const keep = new Set(mods.map(m => m.name));
     for (const m of prev.mods) {
-      if (!keep.has(m.name)) fs.rmSync(path.join(modsDir, m.name), { force: true });
+      const name = safeFileName(m.name, '.jar');
+      if (name && !keep.has(name)) fs.rmSync(path.join(modsDir, name), { force: true });
     }
   }
 

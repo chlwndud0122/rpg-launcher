@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const AdmZip = require('adm-zip');
 const { fetchJson, download } = require('./net');
+const { safeFileName, assertTrustedUrl } = require('./safe');
 
 async function requiredJavaMajor(mcVersion) {
   const manifest = await fetchJson('https://piston-meta.mojang.com/mc/game/version_manifest_v2.json');
@@ -37,7 +38,10 @@ async function ensureJava(root, mcVersion, report) {
   const pkg = assets[0]?.binary?.package;
   if (!pkg) throw new Error(`자바 ${major}를 받을 수 없어요.`);
 
-  const zipPath = path.join(root, 'runtime', pkg.name);
+  const zipName = safeFileName(pkg.name, '.zip');
+  if (!zipName || !/^[0-9a-f]{64}$/i.test(pkg.checksum || '')) throw new Error('자바 파일 정보가 이상해서 멈췄어요.');
+  assertTrustedUrl(pkg.link, ['github.com', 'adoptium.net']);
+  const zipPath = path.join(root, 'runtime', zipName);
   await download(pkg.link, zipPath, {
     hash: pkg.checksum,
     algo: 'sha256',

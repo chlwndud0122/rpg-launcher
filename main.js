@@ -1,10 +1,11 @@
 // Launcher main process: window, Microsoft login, and starting the game.
-const { app, BrowserWindow, ipcMain, safeStorage, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, safeStorage, shell, session } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { Auth } = require('msmc');
 const { prepareAndLaunch } = require('./core/game');
 const { fetchJson } = require('./core/net');
+const { redact, applySafeConfig } = require('./core/safe');
 
 if (!app.requestSingleInstanceLock()) app.quit();
 
@@ -20,7 +21,6 @@ let gameRunning = false;
 // Settings come from GitHub so the server owner can change them without a reinstall.
 // The last copy that worked is kept on disk for when GitHub can't be reached.
 const REMOTE_CACHE = path.join(app.getPath('userData'), 'remote-config.json');
-const REMOTE_KEYS = ['serverName', 'subtitle', 'serverAddress', 'minecraftVersion', 'fabricLoader', 'mods', 'language'];
 
 async function loadConfig() {
   const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'launcher.config.json'), 'utf8'));
@@ -34,7 +34,10 @@ async function loadConfig() {
     log('remote config unavailable: ' + e.message);
     try { remote = JSON.parse(fs.readFileSync(REMOTE_CACHE, 'utf8')); } catch {}
   }
-  if (remote) for (const k of REMOTE_KEYS) if (remote[k] !== undefined) config[k] = remote[k];
+  if (remote && typeof remote === 'object') {
+    const rejected = applySafeConfig(config, remote);
+    if (rejected.length) log('ignored unsafe remote settings: ' + rejected.join(', '));
+  }
   return config;
 }
 
@@ -87,7 +90,7 @@ function readRefreshToken() {
 function log(line) {
   try {
     fs.mkdirSync(GAME_DIR, { recursive: true });
-    fs.appendFileSync(LOG_FILE, `[${new Date().toISOString()}] ${line}\n`);
+    fs.appendFileSync(LOG_FILE, `[${new Date().toISOString()}] ${redact(line)}\n`);
   } catch {}
 }
 
@@ -143,6 +146,9 @@ function createWindow() {
   });
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
   win.once('ready-to-show', () => win.show());
+  // The launcher page never navigates anywhere else.
+  win.webContents.on('will-navigate', e => e.preventDefault());
+  win.webContents.on('will-attach-webview', e => e.preventDefault());
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (/^https:\/\//.test(url)) shell.openExternal(url);
     return { action: 'deny' };
@@ -157,6 +163,9 @@ app.on('second-instance', () => {
 });
 
 app.whenReady().then(() => {
+  // No camera, microphone, notifications, etc. for any page.
+  session.defaultSession.setPermissionRequestHandler((_wc, _perm, cb) => cb(false));
+  session.defaultSession.setPermissionCheckHandler(() => false);
   createWindow();
   setupAutoUpdate();
   if (process.env.RPG_LAUNCHER_SELFTEST) runSelfTest();
@@ -182,6 +191,7 @@ async function runSelfTest() {
       auth: await Authenticator.getAuth('TestPlayer'),
       report: s => say(`[${((Date.now() - t0) / 1000).toFixed(0)}s] ${s.step}`),
       onLog: l => {
+        log(l.trimEnd());
         if (/Connecting to|Loading \d+ mods|Exception|Disconnected|lost connection/i.test(l)) say('  game: ' + l.trim().slice(0, 200));
         if (/Connecting to|Sound engine started/.test(l)) setTimeout(() => proc.kill(), 15000);
       },

@@ -1,13 +1,14 @@
 {
   "name": "rpg-launcher",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "친구들과 함께하는 RPG 서버 런처",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "icon": "electron tools/make-icon.js",
     "dist": "electron-builder --win --x64",
-    "test:core": "node test/core-test.js"
+    "test:core": "node test/core-test.js",
+    "test:security": "node test/security-test.js"
   },
   "author": "RPG Server",
   "license": "UNLICENSED",
@@ -35,7 +36,8 @@
       "renderer/**",
       "build/icon.png",
       "node_modules/**",
-      "!node_modules/**/{test,tests,docs,example,examples}/**"
+      "!node_modules/**/{test,tests,docs,example,examples}/**",
+      "!**/*.map"
     ],
     "directories": {
       "output": "dist",
@@ -69,7 +71,22 @@
         "repo": "rpg-launcher",
         "releaseType": "release"
       }
-    ]
+    ],
+    "electronFuses": {
+      "runAsNode": false,
+      "enableCookieEncryption": true,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "enableEmbeddedAsarIntegrityValidation": true,
+      "onlyLoadAppFromAsar": true
+    }
   },
-  "repository": "https://github.com/chlwndud0122/rpg-launcher"
+  "repository": "https://github.com/chlwndud0122/rpg-launcher",
+  "overrides": {
+    "request": {
+      "form-data": "^2.5.5",
+      "qs": "^6.14.1",
+      "tough-cookie": "^4.1.4"
+    }
+  }
 }

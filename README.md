@@ -27,3 +27,11 @@ npm start          # 런처 실행
 npm run dist       # 설치 파일 만들기 (dist/)
 ```
 런처 자체를 업데이트하려면 `package.json`의 `version`을 올리고 빌드한 뒤, `dist/`의 `RPG-Launcher-Setup.exe`, `.blockmap`, `latest.yml`을 GitHub 릴리스에 올리면 돼요.
+
+## 보안
+- 로그인 정보는 Windows 암호화(DPAPI)로 저장돼요. 기록 파일(`launcher-log.txt`)에는 로그인 토큰이 남지 않아요.
+- 설정 파일은 GitHub에서 받아도 검사를 통과한 값만 써요(경로 조작, 명령어 끼워넣기 차단).
+- 모드는 Modrinth, 자바는 Adoptium에서만 HTTPS로 받고 해시로 확인해요.
+- 런처 파일이 변조되면 실행되지 않아요(Electron 퓨즈, asar 무결성 검사).
+- 보안 테스트: `npm run test:security`
+- **GitHub 계정에 2단계 인증을 꼭 켜두세요.** 자동 업데이트가 이 계정을 통해 배포돼요.
