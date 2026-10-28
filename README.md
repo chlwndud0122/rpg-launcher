@@ -1,6 +1,6 @@
 # RPG Launcher
 
-친구들과 함께하는 프라이빗 마인크래프트 RPG 서버 전용 런처예요.
+마인크래프트 서버 런처예요.
 
 - 마이크로소프트 정품 로그인
 - 자바, 마인크래프트, Fabric, 미니맵 모드(Xaero's Minimap / World Map), Sodium 자동 설치
