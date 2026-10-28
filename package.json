@@ -1,6 +1,6 @@
 {
   "name": "rpg-launcher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "친구들과 함께하는 RPG 서버 런처",
   "main": "main.js",
   "scripts": {
