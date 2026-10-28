@@ -1,6 +1,6 @@
 {
   "name": "rpg-launcher",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "마인크래프트 서버 런처",
   "main": "main.js",
   "scripts": {
@@ -57,7 +57,7 @@
     "nsis": {
       "oneClick": true,
       "perMachine": false,
-      "createDesktopShortcut": true,
+      "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
       "shortcutName": "주영런처",
       "runAfterFinish": true,
