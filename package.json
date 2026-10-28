@@ -1,0 +1,75 @@
+{
+  "name": "rpg-launcher",
+  "version": "1.0.0",
+  "description": "친구들과 함께하는 RPG 서버 런처",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "icon": "electron tools/make-icon.js",
+    "dist": "electron-builder --win --x64",
+    "test:core": "node test/core-test.js"
+  },
+  "author": "RPG Server",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "adm-zip": "^0.6.1",
+    "electron-updater": "^6.8.11",
+    "minecraft-launcher-core": "^3.18.2",
+    "msmc": "^5.0.5"
+  },
+  "devDependencies": {
+    "electron": "^45.1.0",
+    "electron-builder": "^26.18.0"
+  },
+  "productName": "RPG Launcher",
+  "private": true,
+  "build": {
+    "appId": "com.friends.rpglauncher",
+    "productName": "RPG Launcher",
+    "files": [
+      "package.json",
+      "main.js",
+      "preload.js",
+      "launcher.config.json",
+      "core/**",
+      "renderer/**",
+      "build/icon.png",
+      "node_modules/**",
+      "!node_modules/**/{test,tests,docs,example,examples}/**"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "RPG Launcher",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "RPG-Launcher-Setup.${ext}"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "chlwndud0122",
+        "repo": "rpg-launcher",
+        "releaseType": "release"
+      }
+    ]
+  },
+  "repository": "https://github.com/chlwndud0122/rpg-launcher"
+}

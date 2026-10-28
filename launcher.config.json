@@ -1,0 +1,15 @@
+{
+  "serverName": "우리들의 RPG 서버",
+  "subtitle": "친구들과 함께하는 모험",
+  "serverAddress": "",
+  "minecraftVersion": "1.21.11",
+  "fabricLoader": "latest",
+  "mods": [
+    "fabric-api",
+    "xaeros-minimap",
+    "xaeros-world-map",
+    "sodium"
+  ],
+  "language": "ko_kr",
+  "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json"
+}

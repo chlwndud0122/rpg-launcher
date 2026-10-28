@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' https://mc-heads.net data:; style-src 'self'; script-src 'self'">
+  <title>RPG Launcher</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="titlebar">
+    <div class="brand"><img src="../build/icon.png" alt=""><span>RPG Launcher</span></div>
+    <button class="update-pill" id="btn-update" hidden>새 버전 준비됨 · 눌러서 적용</button>
+    <div class="win-btns">
+      <button id="btn-min" title="최소화" aria-label="최소화">&#x2013;</button>
+      <button id="btn-close" class="close" title="닫기" aria-label="닫기">&#x2715;</button>
+    </div>
+  </header>
+
+  <main class="hero">
+    <div class="sky" aria-hidden="true"></div>
+    <svg class="mountains" viewBox="0 0 960 260" preserveAspectRatio="none" aria-hidden="true">
+      <path class="m-far" d="M0 170 L80 120 L140 150 L220 80 L300 140 L360 110 L440 160 L520 70 L600 130 L680 100 L760 150 L840 90 L960 140 L960 260 L0 260Z"/>
+      <path class="m-near" d="M0 210 L60 180 L120 200 L200 150 L270 195 L340 170 L420 205 L500 160 L580 200 L650 175 L730 210 L810 165 L880 195 L960 175 L960 260 L0 260Z"/>
+    </svg>
+    <div class="hero-text">
+      <div class="badge" id="version-badge">Java Edition</div>
+      <h1 id="server-name">우리들의 RPG 서버</h1>
+      <p id="subtitle"></p>
+      <div class="server-chip" id="server-chip">
+        <span class="dot"></span><span id="server-text">서버 정보 불러오는 중</span>
+      </div>
+    </div>
+    <aside class="tips" aria-label="조작 안내">
+      <h2>미니맵 단축키</h2>
+      <ul>
+        <li><kbd>M</kbd><span>전체 지도 열기</span></li>
+        <li><kbd>B</kbd><span>현재 위치 웨이포인트 저장</span></li>
+        <li><kbd>U</kbd><span>웨이포인트 목록</span></li>
+        <li><kbd>Y</kbd><span>미니맵 설정</span></li>
+      </ul>
+    </aside>
+  </main>
+
+  <footer class="dock">
+    <section class="account" id="account">
+      <img id="avatar" class="avatar" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%231e222b'/%3E%3Crect x='2' y='1' width='4' height='3' fill='%233a4150'/%3E%3Crect x='1' y='5' width='6' height='3' fill='%233a4150'/%3E%3C/svg%3E">
+      <div class="account-info">
+        <span class="label" id="account-label">계정</span>
+        <strong id="account-name">로그인이 필요해요</strong>
+      </div>
+      <button class="link" id="btn-logout" hidden>로그아웃</button>
+    </section>
+
+    <section class="status">
+      <div class="status-text" id="status-text">준비됐어요</div>
+      <div class="bar"><div class="fill" id="bar-fill"></div></div>
+      <button class="link small" id="btn-folder">게임 폴더 열기</button>
+    </section>
+
+    <button class="play" id="btn-play" disabled>
+      <span id="play-label">불러오는 중</span>
+    </button>
+  </footer>
+
+  <div class="toast" id="toast" role="alert" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
