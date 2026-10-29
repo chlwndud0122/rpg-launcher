@@ -41,27 +41,33 @@ function pickVersion(versions) {
   return versions.find(v => v.version_type === 'release') || versions[0];
 }
 
+// Looks up all mods at the same time (then their required add-ons, round by round)
+// instead of one after another, so the "checking mods" step is much shorter.
 async function resolveMods(slugs, mcVersion) {
   const resolved = new Map(); // project_id -> file info
-  const queue = [...slugs];
   const seen = new Set();
-  while (queue.length) {
-    const idOrSlug = queue.shift();
-    if (seen.has(idOrSlug)) continue;
-    seen.add(idOrSlug);
-    const q = `loaders=${encodeURIComponent('["fabric"]')}&game_versions=${encodeURIComponent(JSON.stringify([mcVersion]))}`;
-    const versions = await fetchJson(`${MODRINTH}/project/${idOrSlug}/version?${q}`);
-    const v = pickVersion(versions);
-    if (!v) throw new Error(`모드 "${idOrSlug}"는 ${mcVersion} 버전을 아직 지원하지 않아요.`);
-    if (resolved.has(v.project_id)) continue;
-    seen.add(v.project_id);
-    const file = v.files.find(f => f.primary) || v.files[0];
-    const name = safeFileName(file.filename, '.jar');
-    if (!name || !/^[0-9a-f]{40}$/i.test(file.hashes?.sha1 || '')) throw new Error(`모드 "${idOrSlug}" 파일 정보가 이상해서 멈췄어요.`);
-    assertTrustedUrl(file.url, ['modrinth.com']);
-    resolved.set(v.project_id, { name, url: file.url, sha1: file.hashes.sha1 });
-    for (const dep of v.dependencies || []) {
-      if (dep.dependency_type === 'required' && dep.project_id) queue.push(dep.project_id);
+  const q = `loaders=${encodeURIComponent('["fabric"]')}&game_versions=${encodeURIComponent(JSON.stringify([mcVersion]))}`;
+  let round = slugs;
+  while (round.length) {
+    const ids = [...new Set(round)].filter(id => !seen.has(id));
+    ids.forEach(id => seen.add(id));
+    const results = await Promise.all(ids.map(async idOrSlug => {
+      const v = pickVersion(await fetchJson(`${MODRINTH}/project/${idOrSlug}/version?${q}`));
+      if (!v) throw new Error(`모드 "${idOrSlug}"는 ${mcVersion} 버전을 아직 지원하지 않아요.`);
+      return [idOrSlug, v];
+    }));
+    round = [];
+    for (const [idOrSlug, v] of results) { // keep the config's order
+      if (resolved.has(v.project_id)) continue;
+      seen.add(v.project_id);
+      const file = v.files.find(f => f.primary) || v.files[0];
+      const name = safeFileName(file?.filename, '.jar');
+      if (!name || !/^[0-9a-f]{40}$/i.test(file.hashes?.sha1 || '')) throw new Error(`모드 "${idOrSlug}" 파일 정보가 이상해서 멈췄어요.`);
+      assertTrustedUrl(file.url, ['modrinth.com']);
+      resolved.set(v.project_id, { name, url: file.url, sha1: file.hashes.sha1 });
+      for (const dep of v.dependencies || []) {
+        if (dep.dependency_type === 'required' && dep.project_id) round.push(dep.project_id);
+      }
     }
   }
   return [...resolved.values()];
@@ -96,12 +102,13 @@ async function syncMods(root, mcVersion, slugs, report) {
     }
   }
 
-  for (let i = 0; i < mods.length; i++) {
-    const m = mods[i];
-    const dest = path.join(modsDir, m.name);
-    if (await fileMatches(dest, m.sha1, 'sha1')) continue;
-    report({ step: `모드 받는 중 (${i + 1}/${mods.length}) ${m.name}`, progress: i / mods.length });
-    await download(m.url, dest, { hash: m.sha1, algo: 'sha1' });
+  // Check every mod file at once, then download only the missing or changed ones.
+  const ok = await Promise.all(mods.map(m => fileMatches(path.join(modsDir, m.name), m.sha1, 'sha1')));
+  const missing = mods.filter((_, i) => !ok[i]);
+  for (let i = 0; i < missing.length; i++) {
+    const m = missing[i];
+    report({ step: `모드 받는 중 (${i + 1}/${missing.length}) ${m.name}`, progress: i / missing.length });
+    await download(m.url, path.join(modsDir, m.name), { hash: m.sha1, algo: 'sha1' });
   }
   fs.writeFileSync(manifestPath, JSON.stringify({ mcVersion, mods }, null, 2));
   return mods;

@@ -7,6 +7,13 @@ const { pipeline } = require('stream/promises');
 
 const UA = 'RPG-Launcher/1.0 (private friends server launcher)';
 
+// A "not found"-style answer (HTTP 4xx) won't change on a retry, so give up at once.
+function httpError(res, url) {
+  const e = new Error(`HTTP ${res.status} (${url})`);
+  e.noRetry = res.status >= 400 && res.status < 500 && res.status !== 429;
+  return e;
+}
+
 async function withRetry(fn, tries = 3) {
   let lastErr;
   for (let i = 0; i < tries; i++) {
@@ -14,21 +21,22 @@ async function withRetry(fn, tries = 3) {
       return await fn();
     } catch (e) {
       lastErr = e;
+      if (e?.noRetry || i === tries - 1) break; // no pointless wait after the last try
       await new Promise(r => setTimeout(r, 800 * (i + 1)));
     }
   }
   throw lastErr;
 }
 
-async function fetchJson(url, timeoutMs = 20000) {
+async function fetchJson(url, timeoutMs = 20000, tries = 3) {
   return withRetry(async () => {
     const res = await fetch(url, {
       headers: { 'User-Agent': UA, Accept: 'application/json' },
       signal: AbortSignal.timeout(timeoutMs),
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status} (${url})`);
+    if (!res.ok) throw httpError(res, url);
     return res.json();
-  });
+  }, tries);
 }
 
 function hashFile(file, algo) {
@@ -56,7 +64,7 @@ async function download(url, dest, { hash, algo = 'sha1', onProgress } = {}) {
       headers: { 'User-Agent': UA },
       signal: AbortSignal.timeout(10 * 60 * 1000),
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status} (${url})`);
+    if (!res.ok) throw httpError(res, url);
     const total = Number(res.headers.get('content-length')) || 0;
     let done = 0;
     const body = Readable.fromWeb(res.body);

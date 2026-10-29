@@ -41,11 +41,6 @@ function writeDefaultOptions(root, config) {
   fs.writeFileSync(file, lines.join('\n') + '\n');
 }
 
-function parseAddress(addr) {
-  const a = (addr || '').trim();
-  return a || null;
-}
-
 /**
  * @param {object} p
  * @param {string} p.root       game folder
@@ -71,11 +66,12 @@ async function prepareAndLaunch({ root, config, auth, memoryGB = 'auto', servers
   };
   fs.mkdirSync(root, { recursive: true });
 
+  // Java and the mod loader don't depend on each other, so check both at once.
   report({ step: '자바 확인 중', progress: 0 });
-  const javaPath = await ensureJava(root, mc, report);
-
-  report({ step: '모드 로더 확인 중', progress: 0 });
-  const fabricId = await ensureFabric(root, mc, config.fabricLoader);
+  const [javaPath, fabricId] = await Promise.all([
+    ensureJava(root, mc, report),
+    ensureFabric(root, mc, config.fabricLoader),
+  ]);
 
   report({ step: '모드 확인 중', progress: 0 });
   await syncMods(root, mc, config.mods || [], report);
@@ -91,7 +87,7 @@ async function prepareAndLaunch({ root, config, auth, memoryGB = 'auto', servers
   }
 
   const client = new Client();
-  const server = parseAddress(config.serverAddress);
+  const server = (config.serverAddress || '').trim() || null;
 
   // Show our server in the in-game multiplayer list too.
   if (server) {

@@ -99,15 +99,16 @@ function ensureServerEntries(root, servers) {
   } catch {}
 
   let rootEntries = [];
-  let existed = fs.existsSync(file);
-  if (existed) {
+  let beforeBuf = null;
+  try { beforeBuf = fs.readFileSync(file); } catch {}
+  if (beforeBuf) {
     try {
-      rootEntries = readNbt(fs.readFileSync(file));
+      rootEntries = readNbt(beforeBuf);
     } catch {
       // Unreadable file: keep a copy and start a fresh list.
       fs.copyFileSync(file, file + '.broken');
       rootEntries = [];
-      existed = false;
+      beforeBuf = null;
     }
   }
   let listTag = rootEntries.find(([n]) => n === 'servers');
@@ -133,7 +134,6 @@ function ensureServerEntries(root, servers) {
     return !wanted.includes(ip) && !previous.includes(ip);
   });
   const next = [...ours, ...others];
-  const beforeBuf = existed ? fs.readFileSync(file) : null;
   list.items = next;
   const afterBuf = writeNbt(rootEntries);
   const changed = !beforeBuf || !beforeBuf.equals(afterBuf);

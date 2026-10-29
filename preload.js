@@ -16,6 +16,5 @@ contextBridge.exposeInMainWorld('launcher', {
   onUpdateReady: cb => ipcRenderer.on('update-ready', (_e, d) => cb(d)),
   onGameClosed: cb => ipcRenderer.on('game-closed', (_e, d) => cb(d)),
   serverStatus: serverId => ipcRenderer.invoke('server-status', serverId),
-  selectServer: serverId => ipcRenderer.invoke('select-server', serverId),
   copyLog: () => ipcRenderer.invoke('copy-log'),
 });

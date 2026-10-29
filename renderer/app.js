@@ -146,7 +146,7 @@ function renderServers() {
   if (!serverListOpen) return;
   for (const sv of servers) {
     if (sv.id === current.id) continue;
-    const el = chip(sv, { button: true, hint: '이 서버로' });
+    const el = chip(sv, { button: true });
     el.classList.add('option');
     el.addEventListener('click', () => {
       if (busy) return;
@@ -306,7 +306,9 @@ $('btn-close').addEventListener('click', () => api.close());
     $('subtitle').hidden = !config.subtitle;
     $('version-badge').textContent = `Java Edition ${config.minecraftVersion}`;
     setServers(servers0, selected0);
-    setInterval(refreshStatus, 30000);
+    // No need to ping while the launcher is minimized (e.g. during play).
+    setInterval(() => { if (!document.hidden) refreshStatus(); }, 30000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshStatus(); });
     account = acc;
     setStatus(account ? `${account.name}님, 준비됐어요` : '마이크로소프트 계정으로 로그인해 주세요', 0);
   } catch (e) {

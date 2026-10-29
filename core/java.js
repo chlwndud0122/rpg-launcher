@@ -17,7 +17,7 @@ async function requiredJavaMajor(mcVersion) {
 function findJavaw(dir) {
   if (!fs.existsSync(dir)) return null;
   for (const name of fs.readdirSync(dir)) {
-    const p = path.join(dir, name, 'bin', process.platform === 'win32' ? 'javaw.exe' : 'java');
+    const p = path.join(dir, name, 'bin', javawName);
     if (fs.existsSync(p)) return p;
   }
   return null;
@@ -25,10 +25,15 @@ function findJavaw(dir) {
 
 // Remembers which Java each Minecraft version needs, so the game can still
 // start when Mojang's servers can't be reached.
+// The Java a Minecraft version needs never changes, so once that Java is
+// installed we skip asking Mojang (two downloads, one of them large) on every start.
+const javawName = process.platform === 'win32' ? 'javaw.exe' : 'java';
 async function javaMajorFor(root, mcVersion) {
   const cacheFile = path.join(root, 'runtime', 'java-versions.json');
   let cache = {};
   try { cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8')); } catch {}
+  const known = cache[mcVersion];
+  if (Number.isInteger(known) && findJavaw(path.join(root, 'runtime', `java-${known}`))) return known;
   try {
     const major = await requiredJavaMajor(mcVersion);
     if (cache[mcVersion] !== major) {

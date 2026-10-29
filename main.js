@@ -58,7 +58,8 @@ async function visibleServersFor(config, uuid) {
     const u = new URL(config.accessUrl);
     if (!list.some(s => hostOf(s.address) === u.hostname.toLowerCase())) return open;
     u.searchParams.set('uuid', String(uuid).replace(/-/g, ''));
-    const r = await fetchJson(u.toString(), 4000);
+    // One quick try: if the check is down, the launcher still opens fast with the open servers.
+    const r = await fetchJson(u.toString(), 4000, 1);
     const allowed = new Set(Array.isArray(r?.allowed) ? r.allowed.filter(x => typeof x === 'string') : []);
     return list.filter(s => !s.restricted || allowed.has(s.id));
   } catch (e) {
@@ -89,7 +90,8 @@ async function loadConfig() {
   let remote = null;
   try {
     const sep = config.remoteConfigUrl.includes('?') ? '&' : '?';
-    remote = await fetchJson(config.remoteConfigUrl + sep + 't=' + Date.now(), 8000);
+    // Two tries at most; offline we fall back to the saved copy instead of waiting ~30s.
+    remote = await fetchJson(config.remoteConfigUrl + sep + 't=' + Date.now(), 8000, 2);
     fs.writeFileSync(REMOTE_CACHE, JSON.stringify(remote));
   } catch (e) {
     log('remote config unavailable: ' + e.message);
@@ -293,7 +295,6 @@ ipcMain.handle('init', async () => {
     config: {
       serverName: config.serverName,
       subtitle: config.subtitle,
-      serverAddress: config.serverAddress,
       minecraftVersion: config.minecraftVersion,
     },
     account: acc && { name: acc.name, uuid: acc.uuid },
@@ -340,14 +341,13 @@ ipcMain.handle('play', async (_e, serverId) => {
   try {
     // Keep the log file small: start fresh when it gets big.
     try { if (fs.statSync(LOG_FILE).size > 5 * 1024 * 1024) fs.rmSync(LOG_FILE); } catch {}
-    // Refresh the login so the session is always valid when joining the server.
-    const fresh = await restoreLogin();
+    // Refresh the login (so the session is valid when joining) and the settings at the same time.
+    const [fresh, config] = await Promise.all([restoreLogin(), loadConfig()]);
     if (!fresh) {
       gameRunning = false;
       account = null;
       return { ok: false, error: '로그인이 만료됐어요. 다시 로그인해 주세요.', relogin: true };
     }
-    const config = await loadConfig();
     lastConfig = config;
     visibleServers = await visibleServersFor(config, account.uuid);
     // The page only sends an id; the address always comes from our own checked list.
@@ -419,12 +419,6 @@ ipcMain.handle('server-status', async (_e, serverId) => {
   const s = visibleServers.find(x => x.id === serverId) || visibleServers[0];
   if (!s) return { online: false, none: true };
   return pingServer(s.address);
-});
-
-ipcMain.handle('select-server', (_e, serverId) => {
-  if (!visibleServers.some(s => s.id === serverId)) return selectedServerId();
-  writeSettings({ selectedServer: serverId });
-  return serverId;
 });
 
 // Copies the end of the launcher log so a friend can paste it to the server owner.

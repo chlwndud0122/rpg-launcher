@@ -14,9 +14,7 @@ const RULES = {
   serverName: v => typeof v === 'string' && v.length <= 60,
   subtitle: v => typeof v === 'string' && v.length <= 120,
   // host or host:port, letters/numbers/dots/dashes only
-  serverAddress: v =>
-    typeof v === 'string' &&
-    (v === '' || (/^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?(:\d{1,5})?$/i.test(v) && !/\.\./.test(v))),
+  serverAddress: v => typeof v === 'string' && (v === '' || isAddress(v)),
   minecraftVersion: v => typeof v === 'string' && /^[0-9][0-9a-z.\-_]{0,30}$/i.test(v) && !v.includes('..'),
   fabricLoader: v => typeof v === 'string' && (v === 'latest' || /^[0-9][0-9a-z.+\-_]{0,30}$/i.test(v)) && !v.includes('..'),
   mods: v => Array.isArray(v) && v.length <= 100 && v.every(s => typeof s === 'string' && /^[a-z0-9_-]{1,64}$/i.test(s)),
