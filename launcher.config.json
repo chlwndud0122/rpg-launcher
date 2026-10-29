@@ -31,14 +31,18 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.3.19.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.3.19.jar",
-      "sha1": "bab3b78b9896dddfd696e4980935559720fc2e22"
+      "name": "jooyoung-ui-0.3.20.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.3.20.jar",
+      "sha1": "0664629e9b7780c8f8bf37e9f2a8273704920614"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.3.20",
+      "text": "스탯 찍기 창이 커졌어요"
+    },
     {
       "date": "0.3.19",
       "text": "설정 창(위쪽 톱니바퀴), 스탯 여러 개 한 번에 찍기"
@@ -54,10 +58,6 @@
     {
       "date": "0.3.15",
       "text": "캐릭터 정보 창 (왼쪽 아래 판 클릭)"
-    },
-    {
-      "date": "0.3.12",
-      "text": "가방(E)과 상점이 새 모양이 됐어요"
     }
   ]
 }
