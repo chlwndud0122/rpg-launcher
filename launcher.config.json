@@ -40,16 +40,24 @@
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
     {
-      "date": "10.29",
+      "date": "0.3.18",
+      "text": "스탯 찍기, 데미지 숫자, 훈련용 허수아비"
+    },
+    {
+      "date": "0.3.17",
+      "text": "상점마다 설명이 나와요"
+    },
+    {
+      "date": "0.3.15",
+      "text": "캐릭터 정보 창 (왼쪽 아래 판 클릭)"
+    },
+    {
+      "date": "0.3.12",
+      "text": "가방(E)과 상점이 새 모양이 됐어요"
+    },
+    {
+      "date": "0.3.11",
       "text": "메뉴가 오른쪽 위에서 열려요 (/메뉴)"
-    },
-    {
-      "date": "10.27",
-      "text": "상점 화면을 새 디자인으로 바꿨어요"
-    },
-    {
-      "date": "10.20",
-      "text": "체력·경험치 막대 안에 숫자가 보여요"
     }
   ]
 }
