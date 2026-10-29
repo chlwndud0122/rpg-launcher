@@ -108,39 +108,52 @@ function statusText(s) {
   const p = s.players || { online: 0, max: 0 };
   return `켜짐 · ${p.online}/${p.max}명`;
 }
+// Collapsed: only the chosen server shows. Clicking it opens the others below.
+let serverListOpen = false;
+function chip(sv, { button, selected, hint }) {
+  const st = serverStatus[sv.id];
+  const el = document.createElement(button ? 'button' : 'div');
+  el.className = 'server-chip ' + (!st ? 'checking' : st.online ? 'ready' : 'offline') + (selected ? ' selected' : '');
+  el.title = `게임 시작 시 ${sv.address} 에 자동 접속`;
+  el.append(
+    Object.assign(document.createElement('span'), { className: 'dot' }),
+    Object.assign(document.createElement('span'), { className: 'name', textContent: sv.name }),
+    Object.assign(document.createElement('span'), { textContent: statusText(st) }),
+  );
+  if (hint) el.append(Object.assign(document.createElement('span'), { className: 'pick', textContent: hint }));
+  if (button) { el.type = 'button'; el.disabled = busy; }
+  return el;
+}
 function renderServers() {
   const box = $('server-list');
   box.replaceChildren();
+  // Each server can have its own artwork (the test server uses a different scene).
+  document.querySelector('.art').classList.toggle('alt', selectedServer === 'test');
   if (!servers.length) {
-    const chip = document.createElement('div');
-    chip.className = 'server-chip';
-    chip.append(Object.assign(document.createElement('span'), { className: 'dot' }),
+    const el = document.createElement('div');
+    el.className = 'server-chip';
+    el.append(Object.assign(document.createElement('span'), { className: 'dot' }),
       Object.assign(document.createElement('span'), { textContent: '서버 준비 중 · 지금은 게임만 실행돼요' }));
-    box.append(chip);
+    box.append(el);
     return;
   }
-  const many = servers.length > 1;
+  const current = servers.find(s => s.id === selectedServer) || servers[0];
+  if (servers.length === 1) { box.append(chip(current, {})); return; }
+  const head = chip(current, { button: true, selected: true, hint: serverListOpen ? '접기 ▴' : '서버 변경 ▾' });
+  head.setAttribute('aria-expanded', String(serverListOpen));
+  head.addEventListener('click', () => { if (busy) return; serverListOpen = !serverListOpen; renderServers(); });
+  box.append(head);
+  if (!serverListOpen) return;
   for (const sv of servers) {
-    const st = serverStatus[sv.id];
-    const el = document.createElement(many ? 'button' : 'div');
-    el.className = 'server-chip ' + (!st ? 'checking' : st.online ? 'ready' : 'offline') + (many && sv.id === selectedServer ? ' selected' : '');
-    el.title = `게임 시작 시 ${sv.address} 에 자동 접속`;
-    const dot = Object.assign(document.createElement('span'), { className: 'dot' });
-    const name = Object.assign(document.createElement('span'), { className: 'name', textContent: many ? sv.name : '서버' });
-    const text = Object.assign(document.createElement('span'), { textContent: (many ? '' : '') + statusText(st) });
-    el.append(dot, name, text);
-    if (many) {
-      el.type = 'button';
-      el.setAttribute('role', 'radio');
-      el.setAttribute('aria-checked', String(sv.id === selectedServer));
-      el.disabled = busy;
-      if (sv.id === selectedServer) el.append(Object.assign(document.createElement('span'), { className: 'pick', textContent: '선택됨' }));
-      el.addEventListener('click', async () => {
-        if (busy || sv.id === selectedServer) return;
-        selectedServer = await api.selectServer(sv.id) || sv.id;
-        renderServers();
-      });
-    }
+    if (sv.id === current.id) continue;
+    const el = chip(sv, { button: true, hint: '이 서버로' });
+    el.classList.add('option');
+    el.addEventListener('click', () => {
+      if (busy) return;
+      selectedServer = sv.id; // remembered for next time once the game is started on it
+      serverListOpen = false;
+      renderServers();
+    });
     box.append(el);
   }
 }

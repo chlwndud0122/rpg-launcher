@@ -9,6 +9,8 @@ app.whenReady().then(async () => {
   await new Promise(r => setTimeout(r, 2500));
   const art = process.argv.find(a => a.startsWith('--art='))?.split('=')[1];
   if (art) { await w.webContents.executeJavaScript(`(() => { const el = document.querySelector('.art'); el.style.backgroundImage = getComputedStyle(el).backgroundImage.replace('hero.jpg', 'hero-${art}.jpg'); })()`); await new Promise(r => setTimeout(r, 800)); }
+  const clicks = (process.argv.find(a => a.startsWith('--click='))?.split('=')[1] || '').split(',').filter(Boolean);
+  for (const c of clicks) { await w.webContents.executeJavaScript(`document.querySelectorAll('#server-list button')[${Number(c)}]?.click()`); await new Promise(r => setTimeout(r, 500)); }
   if (state.startsWith('settings')) { await w.webContents.executeJavaScript("document.getElementById('btn-settings').click()"); await new Promise(r => setTimeout(r, 600)); }
   if (state === 'busy') { await w.webContents.executeJavaScript("document.getElementById('btn-play').click()"); await new Promise(r => setTimeout(r, 600)); }
   const img = await w.webContents.capturePage();
