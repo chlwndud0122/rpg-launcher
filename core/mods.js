@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { fetchJson, download, fileMatches } = require('./net');
-const { safeFileName, assertTrustedUrl } = require('./safe');
+const { safeFileName, assertTrustedUrl, isOwnRepoUrl } = require('./safe');
 
 const MODRINTH = 'https://api.modrinth.com/v2';
 
@@ -73,7 +73,16 @@ async function resolveMods(slugs, mcVersion) {
   return [...resolved.values()];
 }
 
-async function syncMods(root, mcVersion, slugs, report) {
+// Our own mods from the config (already checked by safe.js; checked again here).
+function customModList(list) {
+  return (list || []).map(m => {
+    const name = safeFileName(m?.name, '.jar');
+    if (!name || !isOwnRepoUrl(m.url) || !/^[0-9a-f]{40}$/i.test(m.sha1 || '')) throw new Error('전용 모드 정보가 이상해서 멈췄어요.');
+    return { name, url: m.url, sha1: m.sha1.toLowerCase() };
+  });
+}
+
+async function syncMods(root, mcVersion, slugs, report, customMods = []) {
   const modsDir = path.join(root, 'mods');
   const manifestPath = path.join(root, 'launcher-mods.json');
   fs.mkdirSync(modsDir, { recursive: true });
@@ -81,6 +90,9 @@ async function syncMods(root, mcVersion, slugs, report) {
   let mods;
   try {
     mods = await resolveMods(slugs, mcVersion);
+    const own = customModList(customMods);
+    const taken = new Set(mods.map(x => x.name));
+    for (const c of own) if (!taken.has(c.name)) mods.push(c);
   } catch (e) {
     // No internet? Fall back to what was installed last time.
     if (fs.existsSync(manifestPath)) {
@@ -114,4 +126,4 @@ async function syncMods(root, mcVersion, slugs, report) {
   return mods;
 }
 
-module.exports = { ensureFabric, syncMods };
+module.exports = { ensureFabric, syncMods, customModList };

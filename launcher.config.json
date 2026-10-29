@@ -24,6 +24,13 @@
     "xaeros-world-map",
     "sodium"
   ],
+  "customMods": [
+    {
+      "name": "jooyoung-ui-0.1.0.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.1.0.jar",
+      "sha1": "3f0a2dcd218f41b65173d05b3771722c4edd3c8f"
+    }
+  ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json"
 }

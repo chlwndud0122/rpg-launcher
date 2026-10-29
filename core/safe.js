@@ -19,6 +19,16 @@ const RULES = {
   fabricLoader: v => typeof v === 'string' && (v === 'latest' || /^[0-9][0-9a-z.+\-_]{0,30}$/i.test(v)) && !v.includes('..'),
   mods: v => Array.isArray(v) && v.length <= 100 && v.every(s => typeof s === 'string' && /^[a-z0-9_-]{1,64}$/i.test(s)),
   language: v => typeof v === 'string' && /^[a-z]{2,3}_[a-z]{2,3}$/i.test(v),
+  // Our own mods (not on Modrinth), e.g. the 주영서버 UI mod. Only files in our own GitHub
+  // repository, pinned by their sha1 so a changed file is never installed.
+  customMods: v =>
+    Array.isArray(v) && v.length <= 20 &&
+    new Set(v.map(m => m?.name)).size === v.length &&
+    v.every(m =>
+      m && typeof m === 'object' &&
+      safeFileName(m.name, '.jar') === m.name &&
+      typeof m.sha1 === 'string' && /^[0-9a-f]{40}$/i.test(m.sha1) &&
+      isOwnRepoUrl(m.url)),
   // Servers friends can pick from. "restricted" ones are only shown to players
   // the server says are allowed (see accessUrl).
   servers: v =>
@@ -34,6 +44,18 @@ const RULES = {
   // Plain http is allowed because it only answers "which servers", nothing secret.
   accessUrl: v => typeof v === 'string' && /^https?:\/\/[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?(:\d{1,5})?\/[a-z0-9/_-]{0,64}$/i.test(v),
 };
+// Files we host ourselves: https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/...
+const OWN_REPO_PREFIX = '/chlwndud0122/rpg-launcher/';
+function isOwnRepoUrl(v) {
+  if (typeof v !== 'string' || v.length > 300 || /\.\.|%|\\/.test(v)) return false;
+  try {
+    const u = new URL(v);
+    return u.protocol === 'https:' && u.hostname === 'raw.githubusercontent.com' && !u.search && !u.hash &&
+      u.pathname.startsWith(OWN_REPO_PREFIX) && !u.pathname.includes('..') && !u.pathname.includes('%');
+  } catch {
+    return false;
+  }
+}
 function isAddress(v) {
   return /^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?(:\d{1,5})?$/i.test(v) && !/\.\./.test(v);
 }
@@ -72,4 +94,4 @@ function assertTrustedUrl(url, hosts) {
   return url;
 }
 
-module.exports = { redact, applySafeConfig, safeFileName, assertTrustedUrl, RULES };
+module.exports = { redact, applySafeConfig, safeFileName, assertTrustedUrl, isOwnRepoUrl, RULES };

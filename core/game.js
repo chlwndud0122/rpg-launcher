@@ -74,7 +74,7 @@ async function prepareAndLaunch({ root, config, auth, memoryGB = 'auto', servers
   ]);
 
   report({ step: '모드 확인 중', progress: 0 });
-  await syncMods(root, mc, config.mods || [], report);
+  await syncMods(root, mc, config.mods || [], report, config.customMods || []);
 
   writeDefaultOptions(root, config);
 
