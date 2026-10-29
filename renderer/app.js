@@ -64,10 +64,10 @@ async function onPlayClick() {
     if (r.ok) {
       account = r.account;
       setServers(r.servers, r.selectedServer);
-      setStatus(`${account.name}님, 환영해요! 시작을 눌러주세요`, 0);
+      setStatus('', 0);
       toast(`${account.name}님으로 로그인했어요.`, 'info');
     } else {
-      setStatus('준비됐어요', 0);
+      setStatus('', 0);
       if (r.error) toast(r.error);
     }
     render();
@@ -79,7 +79,7 @@ async function onPlayClick() {
   const r = await api.play(selectedServer);
   if (!r.ok) {
     busy = false;
-    setStatus('준비됐어요', 0);
+    setStatus('', 0);
     if (r.relogin) account = null;
     else $('btn-copylog-quick').hidden = false;
     toast(r.error);
@@ -191,7 +191,7 @@ api.onGameClosed(({ crashed }) => {
     $('btn-copylog-quick').hidden = false;
     toast('게임이 갑자기 꺼졌어요. 다시 시작해 보고, 계속 그러면 "오류 기록 복사"를 눌러 서버 주인에게 보내 주세요.');
   } else {
-    setStatus('준비됐어요', 0);
+    setStatus('', 0);
   }
   refreshStatus();
 });
@@ -336,7 +336,7 @@ $('btn-close').addEventListener('click', () => api.close());
     setInterval(() => { if (!document.hidden) refreshStatus(); }, 30000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshStatus(); });
     account = acc;
-    setStatus(account ? `${account.name}님, 준비됐어요` : '마이크로소프트 계정으로 로그인해 주세요', 0);
+    setStatus(account ? '' : '마이크로소프트 계정으로 로그인해 주세요', 0);
   } catch (e) {
     setStatus('불러오기에 실패했어요. 인터넷 연결을 확인해 주세요', 0);
   }
