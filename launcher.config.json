@@ -22,7 +22,12 @@
     "fabric-api",
     "xaeros-minimap",
     "xaeros-world-map",
-    "sodium"
+    "sodium",
+    "lithium",
+    "ferrite-core",
+    "entityculling",
+    "immediatelyfast",
+    "dynamic-fps"
   ],
   "customMods": [
     {
