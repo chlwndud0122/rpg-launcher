@@ -37,5 +37,19 @@
     }
   ],
   "language": "ko_kr",
-  "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json"
+  "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
+  "news": [
+    {
+      "date": "10.29",
+      "text": "메뉴가 오른쪽 위에서 열려요 (/메뉴)"
+    },
+    {
+      "date": "10.27",
+      "text": "상점 화면을 새 디자인으로 바꿨어요"
+    },
+    {
+      "date": "10.20",
+      "text": "체력·경험치 막대 안에 숫자가 보여요"
+    }
+  ]
 }

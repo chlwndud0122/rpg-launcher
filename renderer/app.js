@@ -40,7 +40,7 @@ function render() {
     $('avatar').onerror = () => ($('avatar').src = AVATAR_PLACEHOLDER);
     $('btn-logout').hidden = false;
     play.classList.remove('login');
-    label.textContent = busy ? '실행 중…' : '게임 시작';
+    label.textContent = busy ? '실행 중…' : '시작';
   } else {
     $('account-label').textContent = '계정';
     $('account-name').textContent = '로그인이 필요해요';
@@ -64,7 +64,7 @@ async function onPlayClick() {
     if (r.ok) {
       account = r.account;
       setServers(r.servers, r.selectedServer);
-      setStatus(`${account.name}님, 환영해요! 게임 시작을 눌러주세요`, 0);
+      setStatus(`${account.name}님, 환영해요! 시작을 눌러주세요`, 0);
       toast(`${account.name}님으로 로그인했어요.`, 'info');
     } else {
       setStatus('준비됐어요', 0);
@@ -124,7 +124,13 @@ function chip(sv, { button, selected, hint }) {
   if (button) { el.type = 'button'; el.disabled = busy; }
   return el;
 }
-function renderServers() {
+function renderServers() { renderServersInner(); updateStats(); }
+function updateStats() {
+  const st = serverStatus[selectedServer];
+  $('online-count').textContent = st && st.online ? `${(st.players || { online: 0 }).online}/${(st.players || { max: 0 }).max}` : '-';
+  $('state-dot').className = 'state' + (st ? (st.online ? ' on' : ' off') : '');
+}
+function renderServersInner() {
   const box = $('server-list');
   box.replaceChildren();
   // Each server can have its own artwork (the test server uses a different scene).
@@ -139,7 +145,7 @@ function renderServers() {
   }
   const current = servers.find(s => s.id === selectedServer) || servers[0];
   if (servers.length === 1) { box.append(chip(current, {})); return; }
-  const head = chip(current, { button: true, selected: true, hint: serverListOpen ? '접기 ▴' : '서버 변경 ▾' });
+  const head = chip(current, { button: true, selected: true, hint: serverListOpen ? '▴' : '▾' });
   head.setAttribute('aria-expanded', String(serverListOpen));
   head.addEventListener('click', () => { if (busy) return; serverListOpen = !serverListOpen; renderServers(); });
   box.append(head);
@@ -280,7 +286,27 @@ document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   $('settings-dialog').hidden = true;
   $('update-dialog').hidden = true;
+  setNews(false);
 });
+
+// ---------- news ----------
+const DEFAULT_NEWS = [{ date: '', text: '새 소식이 아직 없어요.' }];
+function renderNews(list) {
+  const ul = $('news-list');
+  ul.replaceChildren();
+  for (const n of (Array.isArray(list) && list.length ? list : DEFAULT_NEWS)) {
+    const li = document.createElement('li');
+    if (n.date) li.append(Object.assign(document.createElement('span'), { textContent: n.date }));
+    li.append(document.createTextNode(n.text));
+    ul.append(li);
+  }
+}
+function setNews(open) {
+  $('news').hidden = !open;
+  $('btn-news').setAttribute('aria-expanded', String(open));
+}
+$('btn-news').addEventListener('click', () => setNews($('news').hidden));
+renderNews();
 
 $('btn-play').addEventListener('click', onPlayClick);
 $('btn-logout').addEventListener('click', async () => {
@@ -304,7 +330,7 @@ $('btn-close').addEventListener('click', () => api.close());
     $('server-name').textContent = config.serverName;
     $('subtitle').textContent = config.subtitle || '';
     $('subtitle').hidden = !config.subtitle;
-    $('version-badge').textContent = `Java Edition ${config.minecraftVersion}`;
+    renderNews(config.news);
     setServers(servers0, selected0);
     // No need to ping while the launcher is minimized (e.g. during play).
     setInterval(() => { if (!document.hidden) refreshStatus(); }, 30000);

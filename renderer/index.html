@@ -20,48 +20,45 @@
   <main class="hero">
     <div class="sky" aria-hidden="true"></div>
     <div class="art" aria-hidden="true"></div>
-    <div class="hero-text">
-      <div class="badge" id="version-badge">Java Edition</div>
-      <h1 id="server-name">우리들의 RPG 서버</h1>
-      <p id="subtitle"></p>
-      <div class="server-list" id="server-list" role="radiogroup" aria-label="접속할 서버">
-        <div class="server-chip checking"><span class="dot"></span><span>서버 정보 불러오는 중</span></div>
+    <img class="emblem" src="emblem.png" alt="">
+    <section class="account" id="account">
+      <div class="account-info">
+        <strong id="account-name">로그인이 필요해요</strong>
+        <span class="label" id="account-label">계정</span>
+        <button class="link" id="btn-logout" hidden>로그아웃</button>
       </div>
+      <img id="avatar" class="avatar" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%231e222b'/%3E%3Crect x='2' y='1' width='4' height='3' fill='%233a4150'/%3E%3Crect x='1' y='5' width='6' height='3' fill='%233a4150'/%3E%3C/svg%3E">
+    </section>
+    <div class="hero-text">
+      <h1 id="server-name">주영서버</h1>
+      <p id="subtitle" hidden></p>
+      <span id="version-badge" hidden></span>
     </div>
-    <aside class="tips" aria-label="조작 안내">
-      <h2>미니맵 단축키</h2>
-      <ul>
-        <li><kbd>M</kbd><span>전체 지도 열기</span></li>
-        <li><kbd>B</kbd><span>현재 위치 웨이포인트 저장</span></li>
-        <li><kbd>U</kbd><span>웨이포인트 목록</span></li>
-        <li><kbd>Y</kbd><span>미니맵 설정</span></li>
-      </ul>
+    <aside class="news" id="news" hidden aria-label="소식">
+      <h2>소식</h2>
+      <ul id="news-list"></ul>
+      <div class="keys">미니맵 <kbd>M</kbd> 전체 지도 · <kbd>B</kbd> 웨이포인트 · <kbd>U</kbd> 목록 · <kbd>Y</kbd> 설정</div>
     </aside>
   </main>
 
   <footer class="dock">
-    <section class="account" id="account">
-      <img id="avatar" class="avatar" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%231e222b'/%3E%3Crect x='2' y='1' width='4' height='3' fill='%233a4150'/%3E%3Crect x='1' y='5' width='6' height='3' fill='%233a4150'/%3E%3C/svg%3E">
-      <div class="account-info">
-        <span class="label" id="account-label">계정</span>
-        <strong id="account-name">로그인이 필요해요</strong>
-      </div>
-      <button class="link" id="btn-logout" hidden>로그아웃</button>
-    </section>
-
-    <section class="status">
+    <div class="dock-left">
+      <span class="stat">접속자 <b id="online-count">-</b></span><i class="sep"></i>
+      <span class="stat">서버 상태 <span class="state" id="state-dot"></span></span><i class="sep"></i>
+      <button class="link small" id="btn-settings">설정</button>
+      <button class="link small" id="btn-folder">게임 폴더</button>
+      <button class="link small" id="btn-copylog-quick" hidden>오류 기록 복사</button>
+    </div>
+    <button class="news-btn" id="btn-news" aria-expanded="false"><span class="chev"></span>소식</button>
+    <div class="dock-right">
       <div class="status-text" id="status-text">준비됐어요</div>
-      <div class="bar"><div class="fill" id="bar-fill"></div></div>
-      <div class="links">
-        <button class="link small" id="btn-settings">설정</button>
-        <button class="link small" id="btn-folder">게임 폴더 열기</button>
-        <button class="link small" id="btn-copylog-quick" hidden>오류 기록 복사</button>
+      <div class="play-row">
+        <button class="play" id="btn-play" disabled><span id="play-label">불러오는 중</span></button>
+        <i class="sep"></i>
+        <div class="server-slot"><div class="server-list" id="server-list" role="radiogroup" aria-label="접속할 서버"></div></div>
       </div>
-    </section>
-
-    <button class="play" id="btn-play" disabled>
-      <span id="play-label">불러오는 중</span>
-    </button>
+    </div>
+    <div class="bar"><div class="fill" id="bar-fill"></div></div>
   </footer>
 
   <div class="toast" id="toast" role="alert" hidden></div>

@@ -296,6 +296,7 @@ ipcMain.handle('init', async () => {
       serverName: config.serverName,
       subtitle: config.subtitle,
       minecraftVersion: config.minecraftVersion,
+      news: config.news,
     },
     account: acc && { name: acc.name, uuid: acc.uuid },
     version: app.getVersion(),
