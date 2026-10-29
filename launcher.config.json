@@ -31,14 +31,18 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.3.20.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.3.20.jar",
-      "sha1": "0664629e9b7780c8f8bf37e9f2a8273704920614"
+      "name": "jooyoung-ui-0.3.21.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.3.21.jar",
+      "sha1": "7384594a9407e9dbc6c8da9a0ea752f49a6814ed"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.3.21",
+      "text": "스탯 찍기·캐릭터 정보 창 표시 다듬기"
+    },
     {
       "date": "0.3.20",
       "text": "스탯 찍기 창이 커졌어요"
