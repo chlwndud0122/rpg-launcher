@@ -31,9 +31,9 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.3.12.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.3.12.jar",
-      "sha1": "546b624d534eb521266edbd3ec4aa9e353fe80aa"
+      "name": "jooyoung-ui-0.3.13.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.3.13.jar",
+      "sha1": "e573c6eb6c1659728961ac9c3ab99d94a7486d87"
     }
   ],
   "language": "ko_kr",
