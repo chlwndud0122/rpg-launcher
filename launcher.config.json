@@ -31,14 +31,18 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.3.18.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.3.18.jar",
-      "sha1": "9428725f6b86d1dd9f24aec4e17780517d189a1f"
+      "name": "jooyoung-ui-0.3.19.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.3.19.jar",
+      "sha1": "bab3b78b9896dddfd696e4980935559720fc2e22"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.3.19",
+      "text": "설정 창(위쪽 톱니바퀴), 스탯 여러 개 한 번에 찍기"
+    },
     {
       "date": "0.3.18",
       "text": "스탯 찍기, 데미지 숫자, 훈련용 허수아비"
@@ -54,10 +58,6 @@
     {
       "date": "0.3.12",
       "text": "가방(E)과 상점이 새 모양이 됐어요"
-    },
-    {
-      "date": "0.3.11",
-      "text": "메뉴가 오른쪽 위에서 열려요 (/메뉴)"
     }
   ]
 }
