@@ -31,14 +31,18 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.3.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.3.jar",
-      "sha1": "1ef89624503104fb7ef415686604de4e89d248da"
+      "name": "jooyoung-ui-0.4.4.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.4.jar",
+      "sha1": "075423bfaf480c32ede8bfdd6a0a77ffe3448a47"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.4",
+      "text": "강화 메뉴에 움직이는 엠블럼과 버튼 모양이 들어갔어요 (시험)"
+    },
     {
       "date": "0.4.3",
       "text": "강화 메뉴 준비 중이에요 (시험)"
@@ -58,10 +62,6 @@
     {
       "date": "0.3.24",
       "text": "기본 마크 화면으로 돌아갔어요. 새 화면은 준비 중이에요"
-    },
-    {
-      "date": "0.3.23",
-      "text": "지도 틀이 지도 크기를 따라가요, 네모 지도 틀 추가"
     }
   ]
 }
