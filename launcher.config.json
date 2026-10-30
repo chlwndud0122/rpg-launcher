@@ -31,14 +31,18 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.3.23.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.3.23.jar",
-      "sha1": "4d6d1cd18f285505b43d4eed19e33dbc2abe762d"
+      "name": "jooyoung-ui-0.3.24.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.3.24.jar",
+      "sha1": "90fd662e5d94ebb5ab00788e3df703085b83bb81"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.3.24",
+      "text": "기본 마크 화면으로 돌아갔어요. 새 화면은 준비 중이에요"
+    },
     {
       "date": "0.3.23",
       "text": "지도 틀이 지도 크기를 따라가요, 네모 지도 틀 추가"
@@ -58,10 +62,6 @@
     {
       "date": "0.3.19",
       "text": "설정 창(위쪽 톱니바퀴), 스탯 여러 개 한 번에 찍기"
-    },
-    {
-      "date": "0.3.18",
-      "text": "스탯 찍기, 데미지 숫자, 훈련용 허수아비"
     }
   ]
 }
