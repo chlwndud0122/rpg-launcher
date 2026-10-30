@@ -31,14 +31,18 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.2.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.2.jar",
-      "sha1": "eda724ec397c277ce6ecb86604a14d988f512cec"
+      "name": "jooyoung-ui-0.4.3.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.3.jar",
+      "sha1": "1ef89624503104fb7ef415686604de4e89d248da"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.3",
+      "text": "강화 메뉴 준비 중이에요 (시험)"
+    },
     {
       "date": "0.4.2",
       "text": "그림 메뉴에서 안 쓰는 칸은 마우스를 올려도 안 밝아져요"
@@ -58,10 +62,6 @@
     {
       "date": "0.3.23",
       "text": "지도 틀이 지도 크기를 따라가요, 네모 지도 틀 추가"
-    },
-    {
-      "date": "0.3.22",
-      "text": "화면 새 디자인: 둥근 얼굴 틀·체력 마나 경험치 막대·지도 틀, 메뉴 버튼, 굵은 새 글꼴"
     }
   ]
 }
