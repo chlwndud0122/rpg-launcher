@@ -40,6 +40,10 @@
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
     {
+      "date": "0.4.8",
+      "text": "데미지 숫자가 전용 글꼴(테두리 있음)로 다시 나와요"
+    },
+    {
       "date": "0.4.6",
       "text": "강화 버튼을 누르면 눌린 모양이 나와요"
     },
@@ -58,10 +62,6 @@
     {
       "date": "0.4.1",
       "text": "새 메뉴 그림 준비 중이에요 (장비·강화 모양 시험)"
-    },
-    {
-      "date": "0.4.0",
-      "text": "새 메뉴 화면 준비 중이에요 (가방 모양 시험)"
     }
   ]
 }
