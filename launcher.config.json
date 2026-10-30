@@ -31,16 +31,16 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.5.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.5.jar",
-      "sha1": "134a738dc75bc0cc81f8dc29d092c8f0cd497598"
+      "name": "jooyoung-ui-0.4.6.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.6.jar",
+      "sha1": "ad17c092445f9dd4ef1bec0f3170a8a644c04e55"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
     {
-      "date": "0.4.5",
+      "date": "0.4.6",
       "text": "강화 버튼을 누르면 눌린 모양이 나와요"
     },
     {
