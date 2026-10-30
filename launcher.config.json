@@ -31,14 +31,18 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.1.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.1.jar",
-      "sha1": "51d38b24742deaa0f8f62c4ed10774e1e63590a6"
+      "name": "jooyoung-ui-0.4.2.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.2.jar",
+      "sha1": "eda724ec397c277ce6ecb86604a14d988f512cec"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.2",
+      "text": "그림 메뉴에서 안 쓰는 칸은 마우스를 올려도 안 밝아져요"
+    },
     {
       "date": "0.4.1",
       "text": "새 메뉴 그림 준비 중이에요 (장비·강화 모양 시험)"
@@ -58,10 +62,6 @@
     {
       "date": "0.3.22",
       "text": "화면 새 디자인: 둥근 얼굴 틀·체력 마나 경험치 막대·지도 틀, 메뉴 버튼, 굵은 새 글꼴"
-    },
-    {
-      "date": "0.3.21",
-      "text": "스탯 찍기·캐릭터 정보 창 표시 다듬기"
     }
   ]
 }
