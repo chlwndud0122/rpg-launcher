@@ -31,14 +31,18 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.0.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.0.jar",
-      "sha1": "5fdfc891b5620cd2e646b3dd3599875da1bb889e"
+      "name": "jooyoung-ui-0.4.1.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.1.jar",
+      "sha1": "51d38b24742deaa0f8f62c4ed10774e1e63590a6"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.1",
+      "text": "새 메뉴 그림 준비 중이에요 (장비·강화 모양 시험)"
+    },
     {
       "date": "0.4.0",
       "text": "새 메뉴 화면 준비 중이에요 (가방 모양 시험)"
@@ -58,10 +62,6 @@
     {
       "date": "0.3.21",
       "text": "스탯 찍기·캐릭터 정보 창 표시 다듬기"
-    },
-    {
-      "date": "0.3.20",
-      "text": "스탯 찍기 창이 커졌어요"
     }
   ]
 }
