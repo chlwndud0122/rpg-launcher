@@ -31,14 +31,18 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.16.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.16.jar",
-      "sha1": "82d16609cfc3befb8d6861522696d05b025c290d"
+      "name": "jooyoung-ui-0.4.17.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.17.jar",
+      "sha1": "fb592eca5a1d09664e04430df37f2fa35cf3e794"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.17",
+      "text": "가방·장비 창 새 디자인, 채팅창 자물쇠와 크기 범위, 강화 알림 글자가 커졌어요"
+    },
     {
       "date": "0.4.16",
       "text": "강화창·툴팁·채팅창·랭킹이 새 디자인으로 바뀌고 글꼴이 Pretendard가 됐어요"
