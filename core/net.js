@@ -59,6 +59,7 @@ async function fileMatches(file, hash, algo) {
 async function download(url, dest, { hash, algo = 'sha1', onProgress } = {}) {
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   const tmp = dest + '.part';
+  try {
   await withRetry(async () => {
     const res = await fetch(url, {
       headers: { 'User-Agent': UA },
@@ -78,6 +79,10 @@ async function download(url, dest, { hash, algo = 'sha1', onProgress } = {}) {
       throw new Error('다운로드한 파일이 손상됐어요: ' + path.basename(dest));
     }
   });
+  } catch (e) {
+    fs.rmSync(tmp, { force: true }); // don't leave half-downloaded files behind
+    throw e;
+  }
   fs.renameSync(tmp, dest);
 }
 

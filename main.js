@@ -225,6 +225,7 @@ function createWindow() {
   win.once('ready-to-show', () => win.show());
   // The launcher page never navigates anywhere else.
   win.webContents.on('will-navigate', e => e.preventDefault());
+  win.webContents.on('will-redirect', e => e.preventDefault());
   win.webContents.on('will-attach-webview', e => e.preventDefault());
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (/^https:\/\//.test(url)) shell.openExternal(url);
