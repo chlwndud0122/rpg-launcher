@@ -31,14 +31,24 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.18.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.18.jar",
-      "sha1": "09c58889f7cb511db8eca8d29347d31050fd9218"
+      "name": "jooyoung-ui-0.4.19.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.19.jar",
+      "sha1": "574254b94d556deda977a6e8fc920adfd0f25350"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.19",
+      "text": "강화창·툴팁·채팅창이 좋아졌어요",
+      "details": [
+        "가방·장비·강화창에서 장비에 마우스를 올리면 새 툴팁이 떠요",
+        "채팅창을 접어 두면 닫아도 탭 줄이 남고, 안 읽은 글 수가 보여요",
+        "핫바와 상태판이 GUI 크기를 따라가요",
+        "강화 버튼이 잠시 안 눌리던 문제를 고쳤어요"
+      ]
+    },
     {
       "date": "0.4.18",
       "text": "서버 이름이 히페리아로 바뀌었어요",
@@ -74,10 +84,6 @@
     {
       "date": "0.4.6",
       "text": "강화 버튼을 누르면 눌린 모양이 나와요"
-    },
-    {
-      "date": "0.4.4",
-      "text": "강화 메뉴에 움직이는 엠블럼과 버튼 모양이 들어갔어요 (시험)"
     }
   ]
 }
