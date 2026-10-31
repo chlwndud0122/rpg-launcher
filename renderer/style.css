@@ -33,7 +33,7 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   padding-left: 14px; background: transparent;
 }
 .brand { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); letter-spacing: .04em; }
-.brand img { width: 18px; height: 18px; image-rendering: pixelated; }
+.brand img { width: 18px; height: 18px; }
 .win-btns { -webkit-app-region: no-drag; display: flex; height: 100%; }
 .win-btns button {
   width: 46px; height: 100%; border: 0; background: transparent; color: var(--muted); font-size: 14px;
