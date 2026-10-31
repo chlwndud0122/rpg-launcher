@@ -31,14 +31,23 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.22.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.22.jar",
-      "sha1": "eff5b8dd140259f0b20da5f718dd1fb726525f61"
+      "name": "jooyoung-ui-0.4.23.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.23.jar",
+      "sha1": "42f2bb115f1ef95f7b8e789b73474526e3bc9489"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.23",
+      "text": "채팅창이 잘 펼쳐져요",
+      "details": [
+        "T를 누르면 접어 둔 채팅창도 항상 펼쳐져서 바로 쓸 수 있어요",
+        "Alt를 누르고 펼치기 버튼을 누르면 지난 글까지 보여요",
+        "Alt를 누른 채 마우스 휠로 지난 글을 볼 수 있어요"
+      ]
+    },
     {
       "date": "0.4.22",
       "text": "채팅창이 더 편해졌어요",
@@ -81,16 +90,6 @@
       "details": [
         "서버 이름이 주영서버에서 히페리아로 바뀌었어요",
         "게임 안 메뉴와 안내 글에도 새 이름이 나와요"
-      ]
-    },
-    {
-      "date": "0.4.17",
-      "text": "가방·장비 창, 채팅창, 강화 알림이 바뀌었어요",
-      "details": [
-        "가방·장비 창이 새 디자인으로 바뀌었어요",
-        "채팅창 자물쇠가 잠기면 금색으로 보여요",
-        "채팅창을 더 작게·더 크게 할 수 있고 글자 크기도 더 다양해요",
-        "강화 알림 글자가 커졌고 긴 장비 이름도 잘 보여요"
       ]
     }
   ]
