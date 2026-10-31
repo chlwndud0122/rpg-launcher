@@ -46,27 +46,29 @@ button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .hero { position: fixed; inset: 0; overflow: hidden; }
 .sky { position: absolute; inset: 0; background: linear-gradient(180deg, #121624 0%, #1a1630 55%, #2b1f2c 100%); }
 .art {
-  --hero: url("hero.jpg");
+  --hero: url("hero.webp");
   position: absolute; inset: 0;
   background-image:
     linear-gradient(180deg, rgba(5,10,24,.5) 0%, rgba(5,10,24,.2) 40%, rgba(5,10,24,.65) 100%),
     var(--hero);
   background-size: cover; background-position: center bottom;
 }
-.art.alt { --hero: url("hero-test.jpg"); }
+.art.alt { --hero: url("hero-test.webp"); }
 .emblem { position: absolute; left: 36px; top: 40px; width: 96px; height: 96px; filter: drop-shadow(0 0 18px rgba(232,184,74,.3)); }
 .account { position: absolute; right: 36px; top: 40px; display: flex; align-items: center; gap: 14px; }
 .account-info { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 0; }
 .account-info strong { line-height: 1.5; padding-bottom: 2px; font-size: 14px; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .account-info .label { font-size: 11px; color: var(--muted); }
 .avatar { width: 96px; height: 96px; border-radius: 50%; border: 2px solid #cdd6ea; background: var(--panel-2); image-rendering: pixelated; flex: none; }
-.hero-text { position: absolute; left: 0; right: 0; top: 29%; text-align: center; pointer-events: none; }
+.hero-text { position: absolute; left: 0; right: 0; top: 37%; text-align: center; pointer-events: none; isolation: isolate; }
+/* 제목 뒤를 살짝 어둡게 깔아서 복잡한 배경 위에서도 또렷하게 해요 */
+.hero-text::before { content: ''; position: absolute; left: 50%; top: 8%; width: 760px; height: 190px; transform: translateX(-50%); background: radial-gradient(ellipse at center, rgba(4,8,20,.62) 0%, rgba(4,8,20,.38) 45%, rgba(4,8,20,0) 72%); z-index: -1; }
 h1 {
   margin: 0; font-family: "Title", var(--font); font-weight: 400; font-size: 150px; line-height: 1.15;
   background: linear-gradient(180deg, #e9d9a6 0%, #cfae5e 40%, #a8802c 70%, #cdb06a 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  -webkit-text-stroke: 1px #4a3308; paint-order: stroke fill; opacity: .85;
-  filter: drop-shadow(0 2px 0 rgba(30,20,4,.6)) drop-shadow(0 4px 8px rgba(0,0,0,.45));
+  -webkit-text-stroke: 1px #4a3308; paint-order: stroke fill; opacity: 1;
+  filter: drop-shadow(0 3px 0 rgba(20,12,2,.9)) drop-shadow(0 6px 14px rgba(0,0,0,.8)) drop-shadow(0 0 26px rgba(0,0,0,.65));
 }
 .hero-text p { margin: 4px 0 0; color: #c9cedb; font-size: 16px; }
 .hero-text p[hidden] { display: none; }
@@ -81,6 +83,16 @@ h1 {
 .news h2 { margin: 0 0 6px; font-size: 14px; color: var(--gold); }
 .news ul { list-style: none; margin: 0; padding: 0; }
 .news li span { color: #7f8fb3; margin-right: 8px; }
+.news-head { display: block; width: 100%; text-align: left; background: none; border: 0; color: inherit; font: inherit; padding: 2px 0; }
+button.news-head { cursor: pointer; }
+button.news-head:hover { color: #fff; }
+.news-dot { display: inline-block; width: 7px; height: 7px; margin-left: 8px; vertical-align: middle; border-radius: 50%; background: #ff6b6b; box-shadow: 0 0 6px #ff6b6b; }
+.news-dot[hidden] { display: none; }
+.news-btn.has-unread { position: relative; }
+.news-btn.has-unread::after { content: ''; position: absolute; top: 2px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: #ff6b6b; box-shadow: 0 0 6px #ff6b6b; }
+.news-body { margin: 2px 0 8px 14px; padding-left: 0; color: #b9c4de; }
+.news-body[hidden] { display: none; }
+.news-body li::before { content: '· '; color: #7f8fb3; }
 
 /* ---- dock ---- */
 .dock {

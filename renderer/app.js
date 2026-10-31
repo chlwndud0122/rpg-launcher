@@ -290,19 +290,11 @@ document.addEventListener('keydown', e => {
 });
 
 // ---------- news ----------
-const DEFAULT_NEWS = [{ date: '', text: '새 소식이 아직 없어요.' }];
-function renderNews(list) {
-  const ul = $('news-list');
-  ul.replaceChildren();
-  for (const n of (Array.isArray(list) && list.length ? list : DEFAULT_NEWS)) {
-    const li = document.createElement('li');
-    if (n.date) li.append(Object.assign(document.createElement('span'), { textContent: n.date }));
-    li.append(document.createTextNode(n.text));
-    ul.append(li);
-  }
-}
+function showNewsDot(count) { $('btn-news').classList.toggle('has-unread', count > 0); }
+function renderNews(list) { showNewsDot(window.renderNewsList($('news-list'), list)); }
 function setNews(open) {
   $('news').hidden = !open;
+  if (open) showNewsDot(window.markNewsOpenRead($('news-list')));
   $('btn-news').setAttribute('aria-expanded', String(open));
 }
 $('btn-news').addEventListener('click', () => setNews($('news').hidden));

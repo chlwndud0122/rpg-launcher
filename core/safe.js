@@ -20,9 +20,11 @@ const RULES = {
   mods: v => Array.isArray(v) && v.length <= 100 && v.every(s => typeof s === 'string' && /^[a-z0-9_-]{1,64}$/i.test(s)),
   // 런처 "소식" 칸: 날짜와 짧은 글 (화면에는 글자로만 표시돼요)
   news: v =>
-    Array.isArray(v) && v.length <= 6 &&
+    Array.isArray(v) && v.length <= 12 &&
     v.every(n => n && typeof n === 'object' && typeof n.text === 'string' && n.text.length >= 1 && n.text.length <= 80 &&
-      (n.date === undefined || (typeof n.date === 'string' && n.date.length <= 10))),
+      (n.date === undefined || (typeof n.date === 'string' && n.date.length <= 10)) &&
+      // 눌렀을 때 펼쳐지는 자세한 내용 (한 줄씩, 글자로만 표시돼요)
+      (n.details === undefined || (Array.isArray(n.details) && n.details.length <= 10 && n.details.every(d => typeof d === 'string' && d.length >= 1 && d.length <= 100)))),
   language: v => typeof v === 'string' && /^[a-z]{2,3}_[a-z]{2,3}$/i.test(v),
   // Our own mods (not on Modrinth), e.g. the 주영서버 UI mod. Only files in our own GitHub
   // repository, pinned by their sha1 so a changed file is never installed.
