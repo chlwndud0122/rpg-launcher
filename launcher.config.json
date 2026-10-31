@@ -31,14 +31,22 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.19.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.19.jar",
-      "sha1": "574254b94d556deda977a6e8fc920adfd0f25350"
+      "name": "jooyoung-ui-0.4.20.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.20.jar",
+      "sha1": "73f878c10ac6d674c1fe539e606552bc79b79510"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.20",
+      "text": "채팅 입력칸과 작은 글자가 보기 좋아졌어요",
+      "details": [
+        "채팅 입력 글자가 입력칸 가운데에 와요",
+        "작은 설명 글자 색이 밝아져서 더 잘 보여요"
+      ]
+    },
     {
       "date": "0.4.19",
       "text": "강화창·툴팁·채팅창이 좋아졌어요",
@@ -80,10 +88,6 @@
     {
       "date": "0.4.8",
       "text": "데미지 숫자가 전용 글꼴(테두리 있음)로 다시 나와요"
-    },
-    {
-      "date": "0.4.6",
-      "text": "강화 버튼을 누르면 눌린 모양이 나와요"
     }
   ]
 }
