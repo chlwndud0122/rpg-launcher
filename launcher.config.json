@@ -31,14 +31,24 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.24.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.24.jar",
-      "sha1": "e30a637fa43d31ffb3e0a16732e28c9974ee29f3"
+      "name": "jooyoung-ui-0.4.25.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.25.jar",
+      "sha1": "b66532122fac81e93b50c652c83d915e2ce1da5f"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.25",
+      "text": "새 메뉴창(Tab)과 상단바 핑 표시",
+      "details": [
+        "Tab 키를 누르면 새 메뉴창이 열려요 (다시 누르면 닫혀요)",
+        "장비·가방·잡화상점·이동·랭킹·설정을 한곳에서 열 수 있고, 접속자와 핑도 볼 수 있어요",
+        "상단바에 핑(응답 속도) 칸이 생겼어요",
+        "채팅창 틀 모서리 장식이 새로워졌어요"
+      ]
+    },
     {
       "date": "0.4.24",
       "text": "Alt를 누르면 채팅 입력칸이 보여요",
@@ -80,16 +90,6 @@
       "details": [
         "채팅 입력 글자가 입력칸 가운데에 와요",
         "작은 설명 글자 색이 밝아져서 더 잘 보여요"
-      ]
-    },
-    {
-      "date": "0.4.19",
-      "text": "강화창·툴팁·채팅창이 좋아졌어요",
-      "details": [
-        "가방·장비·강화창에서 장비에 마우스를 올리면 새 툴팁이 떠요",
-        "채팅창을 접어 두면 닫아도 탭 줄이 남고, 안 읽은 글 수가 보여요",
-        "핫바와 상태판이 GUI 크기를 따라가요",
-        "강화 버튼이 잠시 안 눌리던 문제를 고쳤어요"
       ]
     }
   ]
