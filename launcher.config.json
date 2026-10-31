@@ -31,14 +31,22 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.17.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.17.jar",
-      "sha1": "fb592eca5a1d09664e04430df37f2fa35cf3e794"
+      "name": "jooyoung-ui-0.4.18.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.18.jar",
+      "sha1": "09c58889f7cb511db8eca8d29347d31050fd9218"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.18",
+      "text": "서버 이름이 히페리아로 바뀌었어요",
+      "details": [
+        "서버 이름이 주영서버에서 히페리아로 바뀌었어요",
+        "게임 안 메뉴와 안내 글에도 새 이름이 나와요"
+      ]
+    },
     {
       "date": "0.4.17",
       "text": "가방·장비 창, 채팅창, 강화 알림이 바뀌었어요",
@@ -70,10 +78,6 @@
     {
       "date": "0.4.4",
       "text": "강화 메뉴에 움직이는 엠블럼과 버튼 모양이 들어갔어요 (시험)"
-    },
-    {
-      "date": "0.4.3",
-      "text": "강화 메뉴 준비 중이에요 (시험)"
     }
   ]
 }
