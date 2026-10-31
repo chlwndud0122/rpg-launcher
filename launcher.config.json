@@ -31,14 +31,24 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.21.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.21.jar",
-      "sha1": "a3b0aa37dc383c53c057e896f5ebb6b91c5cb6a7"
+      "name": "jooyoung-ui-0.4.22.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.22.jar",
+      "sha1": "eff5b8dd140259f0b20da5f718dd1fb726525f61"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.22",
+      "text": "채팅창이 더 편해졌어요",
+      "details": [
+        "채팅 탭 줄이 평소에도 항상 보여요",
+        "접기 버튼을 누르면 채팅 입력도 같이 닫혀서 바로 움직일 수 있어요",
+        "Alt를 누르고 있으면 탭 줄을 눌러서 쓸 수 있어요",
+        "채팅창 기본 위치가 위쪽 바 바로 아래로 바뀌었어요"
+      ]
+    },
     {
       "date": "0.4.21",
       "text": "설정창이 다시 보여요",
@@ -81,16 +91,6 @@
         "채팅창 자물쇠가 잠기면 금색으로 보여요",
         "채팅창을 더 작게·더 크게 할 수 있고 글자 크기도 더 다양해요",
         "강화 알림 글자가 커졌고 긴 장비 이름도 잘 보여요"
-      ]
-    },
-    {
-      "date": "0.4.16",
-      "text": "강화창·툴팁·채팅창·랭킹이 새 디자인이에요",
-      "details": [
-        "전체화면 강화창이 생겼어요",
-        "장비 등급별 아이템 설명창이 생겼어요",
-        "새 채팅창과 랭킹 화면이 생겼어요",
-        "글꼴이 Pretendard로 바뀌었어요"
       ]
     }
   ]
