@@ -31,14 +31,18 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.15.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.15.jar",
-      "sha1": "cd1b53145b879a735832aa434044997d5b991b5d"
+      "name": "jooyoung-ui-0.4.16.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.16.jar",
+      "sha1": "82d16609cfc3befb8d6861522696d05b025c290d"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.16",
+      "text": "강화창·툴팁·채팅창·랭킹이 새 디자인으로 바뀌고 글꼴이 Pretendard가 됐어요"
+    },
     {
       "date": "0.4.8",
       "text": "데미지 숫자가 전용 글꼴(테두리 있음)로 다시 나와요"
