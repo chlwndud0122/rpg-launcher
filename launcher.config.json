@@ -31,14 +31,22 @@
   ],
   "customMods": [
     {
-      "name": "jooyoung-ui-0.4.23.jar",
-      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.23.jar",
-      "sha1": "42f2bb115f1ef95f7b8e789b73474526e3bc9489"
+      "name": "jooyoung-ui-0.4.24.jar",
+      "url": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/mods/jooyoung-ui-0.4.24.jar",
+      "sha1": "e30a637fa43d31ffb3e0a16732e28c9974ee29f3"
     }
   ],
   "language": "ko_kr",
   "remoteConfigUrl": "https://raw.githubusercontent.com/chlwndud0122/rpg-launcher/main/launcher.config.json",
   "news": [
+    {
+      "date": "0.4.24",
+      "text": "Alt를 누르면 채팅 입력칸이 보여요",
+      "details": [
+        "Alt를 누르면 채팅창 아래에 입력칸이 나와요",
+        "입력칸을 누르면 바로 채팅을 칠 수 있어요"
+      ]
+    },
     {
       "date": "0.4.23",
       "text": "채팅창이 잘 펼쳐져요",
@@ -82,14 +90,6 @@
         "채팅창을 접어 두면 닫아도 탭 줄이 남고, 안 읽은 글 수가 보여요",
         "핫바와 상태판이 GUI 크기를 따라가요",
         "강화 버튼이 잠시 안 눌리던 문제를 고쳤어요"
-      ]
-    },
-    {
-      "date": "0.4.18",
-      "text": "서버 이름이 히페리아로 바뀌었어요",
-      "details": [
-        "서버 이름이 주영서버에서 히페리아로 바뀌었어요",
-        "게임 안 메뉴와 안내 글에도 새 이름이 나와요"
       ]
     }
   ]
